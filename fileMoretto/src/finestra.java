@@ -1,5 +1,4 @@
 import java.awt.*;
-import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -8,40 +7,45 @@ import javax.swing.*;
 
 public class finestra 
 {
-    private static int LARGHEZZA_SFONDO = 900;
-    private static int ALTEZZA_SFONDO = 600;
+    private static int LARGHEZZA_SFONDO = 1500;
+    private static int ALTEZZA_SFONDO = 900;
 
     private JFrame finestra;
     private ImageIcon immSfondo;
     private JLabel sfondo;
     private BufferedImage immagine;
+    private JButton inizia;
+    private JButton scommetti;
+    private JButton aumenta;
+    private JButton passare;
+    LayoutManager layout;
 
     public finestra() throws IOException 
     {
         finestra = new JFrame("Poker.com");
-        immagine = ImageIO.read(new File("immagini/tavolo.jpg"));
-        immagine = resize(immagine);
+        immagine = ImageIO.read(new File("fileMoretto/immagini/tavolo.jpg"));
         immSfondo = new ImageIcon(immagine);
         sfondo = new JLabel(immSfondo);
-
-        // Aggiungi un ComponentListener alla finestra
-        finestra.addComponentListener(new ComponentAdapter() {
-            
-            public void componentResized(ComponentEvent e) {
-                // Ridimensiona l'immagine quando la finestra cambia dimensione
-                immagine = resize(immagine);
-                immSfondo.setImage(immagine);
-                sfondo.setIcon(immSfondo);
-            }
-        });
+        immagine = resize(immagine);
+        immSfondo.setImage(immagine);
+        sfondo.setIcon(immSfondo);
+        inizia = new JButton("Inizia Partita");
+        scommetti = new JButton("Scommetti");
+        aumenta = new JButton("Aumenta Puntata");
+        passare = new JButton("Passa la mano");
+        layout = new FlowLayout();
+        //finestra.setButton(inizia);
     }
 
+
+    
     public void creaFinestra() 
     {
         finestra.add(sfondo);
         finestra.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         finestra.pack();
         finestra.setVisible(true);
+
     }
 
     private BufferedImage resize(BufferedImage img) 
@@ -53,5 +57,15 @@ public class finestra
         g2d.dispose();
         return resized;
     }
+
+    
+           /* finestra.setLayout(layout);
+
+            // Aggiungi i bottoni alla finestra
+            finestra.add(pulsante1);
+            finestra.add(pulsante2);
+
+            finestra.setVisible(true);
+            */
 
 }
