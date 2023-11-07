@@ -1,7 +1,7 @@
 public class App {
     public static void main(String[] args) throws Exception 
     {
-        finestra gui = new finestra();
-        gui.creaFinestra();
+        guiEmpty empty = new guiEmpty();
+        guiStart start = new guiStart(empty);
     }
 }
