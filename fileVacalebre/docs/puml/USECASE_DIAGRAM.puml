@@ -1,4 +1,4 @@
-@startuml UseCase Gioco Poker
+@startuml UseCase Gioco Poker Lato Client
 
 actor Player as P
 

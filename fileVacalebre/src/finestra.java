@@ -19,7 +19,7 @@ public class finestra
     public finestra() throws IOException 
     {
         finestra = new JFrame("Poker.com");
-        immagine = ImageIO.read(new File("immagini/tavolo.jpg"));
+        immagine = ImageIO.read(new File("fileVacalebre/immagini/tavolo.jpg"));
         immagine = resize(immagine);
         immSfondo = new ImageIcon(immagine);
         sfondo = new JLabel(immSfondo);
