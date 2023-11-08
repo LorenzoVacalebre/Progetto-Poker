@@ -1,34 +1,72 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
-import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 
-public class guiStart 
+public class guiStart extends JFrame 
 {
-    public guiEmpty frame;
-    public JButton start;
-    public JPanel buttonPanel;
+    private BufferedImage immagineSfondo;
+    private JPanel pannelloSfondo;
+    private GridBagConstraints contenitore;
+    private JButton start;
 
-    public guiStart(guiEmpty e) throws IOException 
+    public guiStart() throws IOException 
     {
-        buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        this.frame = e;
-        this.start = new JButton("Inizia una nuova partita");
-        this.addButton(this.start, "s");
-        this.frame.setVisible(true);
+        //codice per mettere lo sfondo insieme ai metodi creati sotto per disegnarlo
+        immagineSfondo = ImageIO.read(new File("fileMoretto/immagini/tavolo.jpg"));
+        pannelloSfondo = creaPannelloConSfondo();
+        contenitore = new GridBagConstraints();
+        pannelloSfondo.setLayout(new GridBagLayout());
+        
+        //codice per aggiungere un pulsante DOVE VOGLIO IO
+        start = new JButton("Inizia la partita");
+        start.setPreferredSize(new Dimension(200, 50));
+        start.setFont(new Font("Arial", Font.PLAIN, 20));
+        this.addButton(650, 20 , 0 , 0, start);
+
+
+        //aggiungere menu a tendina 
+        
+
+        //impostazioni di default della finestra
+        setTitle("Poker.com");
+        add(pannelloSfondo);
+        setSize(1500, 900);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setVisible(true);
+
     }
 
-    public void addButton(JButton b, String d)
+    //metodo che semplifica il posizionamento di pulsanti
+    private void addButton(int a, int b, int c, int d, JButton s)
     {
-        buttonPanel.add(b);
-        if(d.equals("n"))
-            this.frame.add(buttonPanel, BorderLayout.NORTH);
-        else if(d.equals("e"))
-            this.frame.add(buttonPanel, BorderLayout.EAST);
-        else if(d.equals("w"))
-            this.frame.add(buttonPanel, BorderLayout.WEST);
-        else if(d.equals("s"))
-            this.frame.add(buttonPanel, BorderLayout.SOUTH);
+        contenitore.gridx = 0;
+        contenitore.gridy = 1;
+        contenitore.insets = new Insets(a, b, c, d);
+        pannelloSfondo.add(s, contenitore);
+
     }
 
+    //metodo che mi permette di inserire lo sfondo alla finestra
+    private JPanel creaPannelloConSfondo() 
+    {
+        return new JPanel() 
+        {
+            @Override
+            protected void paintComponent(Graphics g) 
+            {
+                super.paintComponent(g);
+                disegnaSfondo(g);
+            }
+        };
+    }
+
+    //metodo che disegna lo sfondo
+    private void disegnaSfondo(Graphics g) 
+    {
+        if (immagineSfondo != null) 
+            g.drawImage(immagineSfondo, 0, 0, getWidth(), getHeight(), this);
+    }
 }
