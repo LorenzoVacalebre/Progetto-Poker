@@ -4,7 +4,7 @@ import java.net.*;
 public class Comunicazione {
     private ServerSocket serverSocket;
     private int port;
-    private GestioneGioco gG;
+    private GestioneInfoClients gG;
 
     public Comunicazione(int port) {
         this.port = port;
