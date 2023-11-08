@@ -15,7 +15,7 @@ public class guiStart extends JFrame
     public guiStart() throws IOException 
     {
         //codice per mettere lo sfondo insieme ai metodi creati sotto per disegnarlo
-        immagineSfondo = ImageIO.read(new File("fileMoretto/immagini/tavolo.jpg"));
+        immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
         pannelloSfondo = creaPannelloConSfondo();
         contenitore = new GridBagConstraints();
         pannelloSfondo.setLayout(new GridBagLayout());
