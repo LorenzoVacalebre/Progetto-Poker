@@ -1,25 +1,26 @@
 public class Gioco {
-    //3 giocatori che potranno partecipare al gioco
-    private Giocatore g1;
-    private Giocatore g2;
-    private Giocatore g3;
+    private GestioneGiocatori listaGiocatori;
+    private int giocatoreEffRic;
+    private String funzioneRichiesta;
 
-    //costruttore di default
-    public Gioco()
+    public Gioco(GestioneGiocatori listaCompleta)
     {
-        this.g1 = new Giocatore();
-        this.g2 = new Giocatore();
-        this.g3 = new Giocatore();
+        this.listaGiocatori = listaCompleta;
     }
 
-    //metodo utile alla lettura del client per capire chi ha effettuato la richiesta e 
-    //per associare la funzionalità richiesta al client corretto
-    public boolean readClient(String client, String funzRichiesta)
+    public void setGiocatoreEffRic(int nG)
     {
-        if(client == "client1") { g1.setFunzionalitaTemporanea(funzRichiesta); return true; }
-        else if(client == "client2") { g2.setFunzionalitaTemporanea(funzRichiesta); return true; }
-        else if(client == "client3") { g3.setFunzionalitaTemporanea(funzRichiesta); return true; }
-        else return false;
+        this.giocatoreEffRic = nG;
+    }
+
+    public void setFunzioneRichiesta(String fR)
+    {
+        this.funzioneRichiesta = fR;
+    }
+
+    public void run()
+    {
+
     }
 
 }

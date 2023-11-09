@@ -1,9 +1,17 @@
+import java.net.Socket;
+
 public class Giocatore {
     //TODO -> Inserimento attributi necessari per un giocatore; ad esempio la mano (carte)
-    private String funzTemp;
+    private Socket socketDelGiocatore;
 
-    public void setFunzionalitaTemporanea(String funzRich)
+    public Giocatore(Socket socketClient)
     {
-        this.funzTemp = funzRich;
+        this.socketDelGiocatore = socketClient;
     }
+
+    public Socket getSocket()
+    {
+        return this.socketDelGiocatore;
+    }
+
 }
