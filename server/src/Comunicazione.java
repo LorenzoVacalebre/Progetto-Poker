@@ -2,13 +2,24 @@ import java.io.*;
 import java.net.*;
 
 public class Comunicazione {
-    //attributi utili
+    //socket del server
     private ServerSocket serverSocket;
+
+    //porta di collegamento
     private int port;
+
+    //numero client connessi
     private int numeroDiClientConnessi;
+
+    //lista dei giocatori presenti in partita utile a salvare le varie socket
     private GestioneGiocatori listaGiocatori;
+
+    //gioco
     private Gioco gioco;
-    
+
+    /////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
+
     //costruttore di default
     public Comunicazione(int port) {
         this.port = port;
@@ -16,6 +27,7 @@ public class Comunicazione {
         this.listaGiocatori = new GestioneGiocatori();
     }
 
+    //metodo per avviare la prima volta il server
     public void avviaServer() {
         try {
             //inzializzazione socket del server
@@ -27,7 +39,12 @@ public class Comunicazione {
                 if (this.numeroDiClientConnessi < 3) {
                     gestisciConnessioneSingoloClient();//metodo gestione singole connessioni iniziali
                 } else {
-                    mantieniServerInAscolto(); //metodo utile a leggere continuamente tutte le richieste del client
+                    if(this.gioco.getStatus() == false) {
+                        this.gioco.setStatusTrue(); //set stato del gioco a true
+                        this.gioco.creaMazzi(); //creazione mazzi
+                    }
+                    else
+                        mantieniServerInAscolto(); //metodo utile a leggere continuamente tutte le richieste del client
                 }
             }
         } catch (IOException e) {
@@ -46,7 +63,7 @@ public class Comunicazione {
         //aggiunta giocatore alla lista di giocatori presenti in partita
         this.listaGiocatori.push(g);
 
-        // Metodo per chiudere la connessione
+        //metodo per chiudere la connessione
         chiudiConnessione(clientSocket);
     
         //incremento numero di client connessi al server
@@ -69,6 +86,10 @@ public class Comunicazione {
 
         //salvataggio richiesta di uno dei client nel gioco
         invioRichiestaAlGioco(clientSocket);
+
+        //se il gioco è attivo
+        if(this.gioco.getStatus() == true)
+            this.gioco.eseguiMano();
 
         //metodo per chiudere la connessione
         chiudiConnessione(clientSocket);
