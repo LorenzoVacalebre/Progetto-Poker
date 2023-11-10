@@ -11,6 +11,7 @@ public class guiStart extends JFrame
     private JPanel pannelloSfondo;
     private GridBagConstraints contenitore;
     private JButton start;
+    private JComboBox<String> menuTendina;
 
     public guiStart() throws IOException 
     {
@@ -28,7 +29,11 @@ public class guiStart extends JFrame
 
 
         //aggiungere menu a tendina 
-        
+        String[] opzioniMenu = {"Opzione 1", "Opzione 2", "Opzione 3"};
+        menuTendina = new JComboBox<>(opzioniMenu);
+        menuTendina.setPreferredSize(new Dimension(150, 30));
+        menuTendina.setFont(new Font("Arial", Font.PLAIN, 14));
+        this.addButton(20, 20, 0, 0, menuTendina);
 
         //impostazioni di default della finestra
         setTitle("Poker.com");
@@ -40,14 +45,14 @@ public class guiStart extends JFrame
     }
 
     //metodo che semplifica il posizionamento di pulsanti
-    private void addButton(int a, int b, int c, int d, JButton s)
+    private void addButton(int a, int b, int c, int d, JComponent component) 
     {
         contenitore.gridx = 0;
         contenitore.gridy = 1;
         contenitore.insets = new Insets(a, b, c, d);
-        pannelloSfondo.add(s, contenitore);
-
+        pannelloSfondo.add(component, contenitore);
     }
+    
 
     //metodo che mi permette di inserire lo sfondo alla finestra
     private JPanel creaPannelloConSfondo() 
