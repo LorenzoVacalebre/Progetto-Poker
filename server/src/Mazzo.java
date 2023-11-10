@@ -1,10 +1,17 @@
+///////////////////////////////////////////////////////////////////////////////
+//CLASSE MAZZO CONTENENTE LA LISTA DI UN MAZZO(MAZZO DA GIOCO E MAZZO SCARTI)//
+//UTILITA': GESTIONE GENERALE MAZZO                                          //
+///////////////////////////////////////////////////////////////////////////////
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class Mazzo {
+    //lista di carte (mazzo)
     private List<Carta> mazzo;
 
+    //costruttore di default
     public Mazzo()
     {
         this.mazzo = new ArrayList<Carta>();
@@ -12,17 +19,18 @@ public class Mazzo {
 
     public void riempiMazzo()
     {
-        //svutamento mazzo per maggiore sicurezza
+        //svutamento mazzo per maggiore sicurezza e meno problemi
         mazzo.clear();
 
-        //vettori contenenti le informazioni utili
+        //vettori contenenti le informazioni utili alla creazione delle carte
         String[] semi = {"Cuori", "Quadri", "Fiori", "Picche"};
-        String[] valori = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Regina", "Re", "Asso"};
+        String[] numeri = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Regina", "Re", "Asso"};
 
         //riempimento mazzo con tutte le carte utili
+        //foreach per scorrere tutti i semi e poi tutti i numeri
         for (String seme : semi) {
-            for (String valore : valori) {
-                mazzo.add(new Carta(valore, seme));
+            for (String numero : numeri) {
+                mazzo.add(new Carta(numero, seme));
             }
         }
     }

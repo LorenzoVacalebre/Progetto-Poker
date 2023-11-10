@@ -1,3 +1,8 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+//CLASSE COMUNICAZIONE CONTENENTE TUTTA LA COMUNICAZIONE CON IL PROTOCOLLO TCP TRA CLIENT E SERVER   //
+//UTILITA': RICEVIMENTO/INVIO DATI CON I DIVERSI CLIENT, CREAZIONE GIOCO E GIOCATORI, CUORE DEL GIOCO//
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 import java.io.*;
 import java.net.*;
 
@@ -31,20 +36,25 @@ public class Comunicazione {
     public void avviaServer() {
         try {
             //inzializzazione socket del server
-            serverSocket = new ServerSocket(port);
+            this.serverSocket = new ServerSocket(port);
+
+            /* RICHIAMO METODO PER TESTARE IL FUNZIONAMENTO DELLA COMUNICAZIONE TCP
+            while(true)
+                this.comunicazioneTest();
+            */
 
             //mantenimento server in ascolto
             while (true) {
                 //accetta connessione da client diversi fino a quando questi diventano 3
                 if (this.numeroDiClientConnessi < 3) {
-                    gestisciConnessioneSingoloClient();//metodo gestione singole connessioni iniziali
+                    this.gestisciConnessioneSingoloClient();//metodo gestione singole connessioni iniziali
                 } else {
                     if(this.gioco.getStatus() == false) {
                         this.gioco.setStatusTrue(); //set stato del gioco a true
                         this.gioco.creaMazzi(); //creazione mazzi
                     }
                     else
-                        mantieniServerInAscolto(); //metodo utile a leggere continuamente tutte le richieste del client
+                        this.mantieniServerInAscolto(); //metodo utile a leggere continuamente tutte le richieste del client
                 }
             }
         } catch (IOException e) {
@@ -55,7 +65,7 @@ public class Comunicazione {
     //metodo gestione singole connessioni iniziali
     private void gestisciConnessioneSingoloClient() throws IOException {
         //inizializzazione socket con il client utile alla gestione del flusso dei dati
-        Socket clientSocket = serverSocket.accept();
+        Socket clientSocket = this.serverSocket.accept();
     
         //creazione nuovo giocatore temporaneo
         Giocatore g = new Giocatore(clientSocket);
@@ -64,7 +74,7 @@ public class Comunicazione {
         this.listaGiocatori.push(g);
 
         //metodo per chiudere la connessione
-        chiudiConnessione(clientSocket);
+        this.chiudiConnessione(clientSocket);
     
         //incremento numero di client connessi al server
         this.numeroDiClientConnessi++;
@@ -78,21 +88,21 @@ public class Comunicazione {
     private void mantieniServerInAscolto() throws IOException {
 
         //inzializzazione socket con client utile alla gestione del flusso dei dati
-        Socket clientSocket = serverSocket.accept();
+        Socket clientSocket = this.serverSocket.accept();
 
         //salvataggio client che effettua richiesta
         int clientCheEffettuaRichiesta = this.listaGiocatori.trovaClient(clientSocket);
         this.gioco.setGiocatoreEffRic(clientCheEffettuaRichiesta);
 
         //salvataggio richiesta di uno dei client nel gioco
-        invioRichiestaAlGioco(clientSocket);
+        this.invioRichiestaAlGioco(clientSocket);
 
         //se il gioco è attivo
         if(this.gioco.getStatus() == true)
             this.gioco.eseguiMano();
 
         //metodo per chiudere la connessione
-        chiudiConnessione(clientSocket);
+        this.chiudiConnessione(clientSocket);
     }
 
     //metodo utile alla chiusura di una connessione 
@@ -112,4 +122,34 @@ public class Comunicazione {
             this.gioco.setFunzioneRichiesta(funzioneRichiesta);
         }
     }    
+
+    ////////////////////////////////////////////////////////////////////////////////
+    //METODO UTILE AI TEST PER VERIFICARE IL FUNZIONAMENTO DELLA COMUNICAZIONE TCP//
+    ////////////////////////////////////////////////////////////////////////////////
+    private void comunicazioneTest()
+    {
+        try {
+            System.out.println("Server in ascolto sulla porta " + this.port);
+
+            //attendi la connessione da un client
+            Socket clientSocket = serverSocket.accept();
+            System.out.println("Connessione accettata da " + clientSocket.getInetAddress());
+
+            //ottieni lo stream di input dal socket
+            InputStream inputStream = clientSocket.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            //leggi il messaggio inviato dal client
+            String clientMessage = bufferedReader.readLine();
+            System.out.println("Messaggio ricevuto dal client: " + clientMessage);
+
+            //chiudi la connessione
+            this.chiudiConnessione(clientSocket);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////
 }

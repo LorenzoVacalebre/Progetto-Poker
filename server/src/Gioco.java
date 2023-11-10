@@ -1,3 +1,8 @@
+//////////////////////////////////////////////////////////////////////////////////////
+//CLASSE GIOCO CONTENENTELE INFORMAZIONI PIU' IMPORTANTI PER GESTIRE IL GIOCO IN SE'//
+//UTILITA': GESTIRA' BENE O MALE TUTTO IL GIOCO DEL POKER                           //
+//////////////////////////////////////////////////////////////////////////////////////
+
 public class Gioco {
     //lista giocatori
     private GestioneGiocatori listaGiocatori;
@@ -37,20 +42,22 @@ public class Gioco {
     public void creaMazzi()
     {
         //mazzo utilizzato per giocare
-        Mazzo mazzoGioco = new Mazzo();
+        this.mazzoDaGioco = new Mazzo();
         //riempimento mazzo da gioco
-        mazzoGioco.riempiMazzo();
+        this.mazzoDaGioco.riempiMazzo();
         //mischiamento mazzo da gioco
-        mazzoGioco.mischiaMazzo();
+        this.mazzoDaGioco.mischiaMazzo();
 
         //mazzo utilizzato per inserirci le carte scartate
-        Mazzo mazzoScarti = new Mazzo();
+        this.mazzoCarteScartate = new Mazzo();
     }
 
     //metodo utile a giocare il turno al client che ha effettuato la richiesta al server
     public void eseguiMano()
     {
         //TODO -> IMPARARE IL FUNZIONAMENTO DEL POKER PER IMPLEMENTAZIONE
+        //Trovare il modo di gestire i giocatori all'interno della lista, in seguito gestire 
+        //la mano del giocatore stesso dato il client che ha effettuato una richiesta
     }
 
 }

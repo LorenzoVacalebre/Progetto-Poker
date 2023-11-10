@@ -1,9 +1,16 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+//CLASSE GESTIONEGIOCATORI CONTENENTE LA LISTA DEI GIOCATORI                                        //
+//UTILITA': GESTIONE DEI GIOCATORI CHE PARTECIPERANNO AL GIOCO, RICONOSCIMENTO CLIENT DATE LE SOCKET//
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
 import java.net.Socket;
 import java.util.*;
 
 public class GestioneGiocatori {
+    //lista giocatori
     private List<Giocatore> listaGiocatori;
 
+    //costruttore di default
     public GestioneGiocatori()
     {
         this.listaGiocatori = new ArrayList<Giocatore>();
