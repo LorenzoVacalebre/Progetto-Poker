@@ -12,11 +12,15 @@ public class Giocatore {
     //oggetto ManoGiocatore per tenere memorizzata la mano di quest'ultimo continuando ad aggiornarla
     private ManoGiocatore manoGiocatore;
 
+    //attributo utile a capire se è il turno del giocatore o no
+    private boolean urTurn;
+
     //costruttore di default
     public Giocatore(Socket socketClient)
     {
         this.socketDelGiocatore = socketClient;
         this.manoGiocatore = new ManoGiocatore();
+        this.urTurn = false;
     }
 
     //get socket
@@ -31,4 +35,9 @@ public class Giocatore {
         return this.manoGiocatore;
     }
 
+    //set turno giocatore a true o false
+    public void setUrTurn(boolean stato)
+    {
+        this.urTurn = stato;
+    }
 }

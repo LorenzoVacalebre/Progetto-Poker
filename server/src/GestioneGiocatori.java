@@ -28,10 +28,19 @@ public class GestioneGiocatori {
     {
         for(int i = 0; i < this.listaGiocatori.size(); i++)
         {
-            if(this.listaGiocatori.get(i).getSocket() == tmpSocket)
+            if(this.listaGiocatori.get(i).getSocket().equals(tmpSocket))
                 return i;
         }
         return -1;
+    }
+
+    //Metodo da usare nel gioco per attivare e disattivare il turno di ogni giocatore alla fine prima di chiudere la connessione
+    //set turno giocatore a true o false
+    public void setTurnoGiocatore(Socket sClientTemp, boolean turno) {
+        for (int i = 0; i < this.listaGiocatori.size(); i++) {
+            if (this.listaGiocatori.get(i).getSocket().equals(sClientTemp)) 
+                this.listaGiocatori.get(i).setUrTurn(turno);
+        }
     }
 }
 
