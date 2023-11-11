@@ -37,6 +37,18 @@ public class ManoGiocatore {
         }
     }
 
+    //metodo per restituire la size
+    public int size()
+    {
+        return this.manoGiocatore.size();
+    }
+
+    //metodo utile a restituire un oggetto carta
+    public Carta get(int p)
+    {
+        return this.manoGiocatore.get(p);
+    }
+
     //metodo utile a svuotare la propria mano (cambio round)
     public void svuotaMano()
     {

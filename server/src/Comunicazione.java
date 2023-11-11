@@ -25,7 +25,7 @@ public class Comunicazione {
     /////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
 
-    //costruttore di default
+    //costruttore di default (utile a main)
     public Comunicazione(int port) {
         this.port = port;
         this.numeroDiClientConnessi = 0;
@@ -91,8 +91,9 @@ public class Comunicazione {
         Socket clientSocket = this.serverSocket.accept();
 
         //salvataggio client che effettua richiesta
-        int clientCheEffettuaRichiesta = this.listaGiocatori.trovaClient(clientSocket);
-        this.gioco.setGiocatoreEffRic(clientCheEffettuaRichiesta);
+        int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaClient(clientSocket);
+        this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
+        this.gioco.setSocketClientTmp(clientSocket);
 
         //salvataggio richiesta di uno dei client nel gioco
         this.invioRichiestaAlGioco(clientSocket);
@@ -115,13 +116,19 @@ public class Comunicazione {
     }
 
     //salvataggio funzione richiesta da uno dei client nel gioco
-    private void invioRichiestaAlGioco(Socket clientSocket) throws IOException
+    public void invioRichiestaAlGioco(Socket clientSocket) throws IOException
     {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
             String funzioneRichiesta = in.readLine();
             this.gioco.setFunzioneRichiesta(funzioneRichiesta);
         }
-    }    
+    } 
+
+    public void invioInformazioniAlClient(Socket clientSocket, String messaggio) throws IOException
+    {
+        OutputStream outputStream = clientSocket.getOutputStream();
+        outputStream.write(messaggio.getBytes());
+    } 
 
     ////////////////////////////////////////////////////////////////////////////////
     //METODO UTILE AI TEST PER VERIFICARE IL FUNZIONAMENTO DELLA COMUNICAZIONE TCP//

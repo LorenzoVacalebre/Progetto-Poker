@@ -42,5 +42,11 @@ public class GestioneGiocatori {
                 this.listaGiocatori.get(i).setUrTurn(turno);
         }
     }
+
+    //metodo utile a restituire un giocatore dalla lista data la sua posizione in essa
+    public Giocatore getGiocatore(int posG)
+    {
+        return this.listaGiocatori.get(posG);
+    }
 }
 

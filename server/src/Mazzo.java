@@ -49,6 +49,13 @@ public class Mazzo {
         this.mazzo.add(carta);
     }
 
+    //metodo utile per inserire una carta al mazzo
+    public void pushMano(ManoGiocatore mano)
+    {
+        for(int i = 0; i < mano.size(); i++)
+            this.mazzo.add(mano.get(i));
+    }
+
     //metodo utile ad estrarre carte dal mazzo
     public void pull()
     {

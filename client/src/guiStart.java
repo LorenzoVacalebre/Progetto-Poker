@@ -55,7 +55,7 @@ public class guiStart extends JFrame {
                 }
             });
         
-        imgGiocatore = ImageIO.read(new File("client/immagini/postazioneGiocatore.jpg"));
+        //imgGiocatore = ImageIO.read(new File("client/immagini/postazioneGiocatore.jpg"));
         //this.addComponent(0, 100, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
         //this.addComponent(200, 0, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
         //this.addComponent(0, 0, 200, 0, new JLabel(new ImageIcon(imgGiocatore)));
