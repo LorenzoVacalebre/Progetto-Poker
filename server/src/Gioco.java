@@ -63,7 +63,7 @@ public class Gioco {
     //metodo per distribuire le carte a tutti i giocatori
     public void distribuisciCarte()
     {
-
+        
     }
 
     //metodo utile a giocare il turno al client che ha effettuato la richiesta al server

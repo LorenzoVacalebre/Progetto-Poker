@@ -66,22 +66,30 @@ public class Comunicazione {
     private void gestisciConnessioneSingoloClient() throws IOException {
         //inizializzazione socket con il client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
-    
-        //creazione nuovo giocatore temporaneo
-        Giocatore g = new Giocatore(clientSocket);
 
-        //aggiunta giocatore alla lista di giocatori presenti in partita
-        this.listaGiocatori.push(g);
+        //controllo se un client prova a collegarsi su una socket già presente 
+        //(non dovrebbe poter succedere, controllo per maggiore sicurezza)
+        if(this.listaGiocatori.controllaDuplicati(clientSocket) == true)
+            this.chiudiConnessione(clientSocket);
+        else {
+            //creazione nuovo giocatore temporaneo
+            Giocatore g = new Giocatore(clientSocket);
 
-        //metodo per chiudere la connessione
-        this.chiudiConnessione(clientSocket);
-    
-        //incremento numero di client connessi al server
-        this.numeroDiClientConnessi++;
+            //aggiunta giocatore alla lista di giocatori presenti in partita
+            this.listaGiocatori.push(g);
+
+            //metodo per chiudere la connessione
+            this.chiudiConnessione(clientSocket);
+        
+            //incremento numero di client connessi al server
+            this.numeroDiClientConnessi++;
+        }
 
         //inserimento lista completa dei 3 giocatori all'interno del gioco
-        if(numeroDiClientConnessi == 3)
+        if(numeroDiClientConnessi == 3){
             this.gioco = new Gioco(listaGiocatori);//inzio nuovo gioco
+            this.gioco.distribuisciCarte();
+        }
     }
 
     //metodo utile a leggere continuamente tutte le richieste del client
