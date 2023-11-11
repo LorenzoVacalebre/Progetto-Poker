@@ -24,7 +24,7 @@ public class GestioneGiocatori {
     }
 
     //metodo per ottenere un determinato giocatore
-    public int trovaPosizioneCliente(Socket tmpSocket)
+    public int trovaPosizioneClient(Socket tmpSocket)
     {
         return this.posizioneGiocatore(tmpSocket);
     }
@@ -76,6 +76,10 @@ public class GestioneGiocatori {
     public Giocatore getGiocatore(int posG)
     {
         return this.listaGiocatori.get(posG);
+    }
+
+    public int size() {
+        return this.listaGiocatori.size();
     }
 }
 

@@ -50,8 +50,10 @@ public class ManoGiocatore {
     }
 
     //metodo utile a svuotare la propria mano (cambio round)
-    public void svuotaMano()
+    public void svuotaMano(Mazzo carteScartate)
     {
+        for(int i = 0; i < this.manoGiocatore.size(); i++)
+            carteScartate.push(this.manoGiocatore.get(i));
         this.manoGiocatore.clear();
     }
 

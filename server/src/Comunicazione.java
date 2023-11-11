@@ -98,7 +98,7 @@ public class Comunicazione {
         Socket clientSocket = this.serverSocket.accept();
 
         //salvataggio client che effettua richiesta
-        int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneCliente(clientSocket);
+        int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneClient(clientSocket);
         this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
         this.gioco.setSocketClientTmp(clientSocket);
 
@@ -108,15 +108,36 @@ public class Comunicazione {
         //salvataggio richiesta di uno dei client nel gioco
         this.riceviRichiestaDalClient(clientSocket);
 
+        //se è il primo giocatore
         //se il giocatore è ancora presente nel round
         if(this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).getStatusPresenza() == true)
         {
-            //inserimento carta dal mazzo alla mano del giocatore
-            this.gioco.trovaGiocatoreEInserisciCartaInMano();
+            if(this.gioco.statoRound() == false) {
+                //inserimento carte dal mazzo alla mano del giocatore
+                this.gioco.trovaGiocatoreEInserisciCartaInMano();
+                this.gioco.trovaGiocatoreEInserisciCartaInMano();
 
-            //se il gioco è attivo
-            if(this.gioco.getStatus() == true)
-                this.gioco.eseguiMano();
+                //se il client che ha effettuato la connessione è il terzo avvio il round
+                if(this.listaGiocatori.trovaPosizioneClient(clientSocket) == 2)
+                {
+                    this.gioco.setStatusRoundTrue();
+                    //metodo per chiudere la connessione
+                    this.chiudiConnessione(clientSocket);
+                }
+                else
+                {
+                    //metodo per chiudere la connessione
+                    this.chiudiConnessione(clientSocket);
+                }
+            }else
+            {
+                //se il gioco è attivo
+                if(this.gioco.getStatus() == true)
+                    this.gioco.eseguiMano();
+
+                //metodo per chiudere la connessione
+                this.chiudiConnessione(clientSocket);
+            }
         } 
         else
         {

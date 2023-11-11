@@ -20,7 +20,11 @@ public class Gioco {
     private Mazzo mazzoDaGioco, mazzoCarteScartate;
 
     //stato del gioco TRUE -> gioco in esecuzione // FALSE -> gioco fermo
-    private boolean status = false;
+    private boolean statusGioco = false;
+    
+    //stato del round TRUE -> i giocatori non devono pescare le due carte
+    //FALSE -> i giocatori devono pescare le due carte
+    private boolean statusRound = false;
 
     //////////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////////
@@ -35,19 +39,28 @@ public class Gioco {
     public void setFunzioneRichiesta(String fR){ this.funzioneRichiesta = fR; }
 
     //metodo utile ad impostare lo stato del gioco a true
-    public void setStatusTrue(){ this.status = true; }
+    public void setStatusTrue(){ this.statusGioco = true; }
 
     //metodo utile ad impostare lo stato del gioco a false
-    public void setStatusFalse(){ this.status = false; }
+    public void setStatusFalse(){ this.statusGioco = false; }
 
     //metodo utile ad impostare il client del server che ha effettuato una richiesta
     public void setSocketClientTmp(Socket tmp) { this.socketClientTmp = tmp; }
 
     //metodo utile a restituire il client
-    public boolean getStatus() { return this.status;}
+    public boolean getStatus() { return this.statusGioco;}
 
     //metodo utile a ottenere indietro la lista dei giocatori modificata
     public GestioneGiocatori getListaGiocatori(){ return this.listaGiocatori; }
+
+    //ritorna lo stato del round
+    public boolean isStatusRound() {return statusRound; }
+
+    //setta lo stato del round a false
+    public void setStatusRoundFalse() {this.statusRound = false; }
+
+    //setta lo stato del round a true
+    public void setStatusRoundTrue() {this.statusRound = true; }
 
     //metodo utile ad avviare il gioco
     public void creaMazzi()
@@ -80,10 +93,22 @@ public class Gioco {
         this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, tmp.getNumero() + ";" + tmp.getSeme() + ";" + tmp.getIsFacedUp());
     }
 
+    //metodo utile a restituire lo stato del round
+    public boolean statoRound()
+    {
+        return this.statusRound;
+    }
+
+    //metodo utile a svuotare tutte le mani dopo che il round viene terminato
+    public void svuotaMani()
+    {
+        for(int i = 0; i < this.listaGiocatori.size(); i++)
+            this.listaGiocatori.getGiocatore(i).getManoGiocatore().svuotaMano(this.mazzoCarteScartate);
+    }
+
     //metodo utile a giocare il turno al client che ha effettuato la richiesta al server
     public void eseguiMano() throws IOException
     {
-        //TODO -> IMPARARE IL FUNZIONAMENTO DEL POKER PER IMPLEMENTAZIONE
         //Trovare il modo di gestire i giocatori all'interno della lista, in seguito gestire 
         //la mano del giocatore stesso dato il client che ha effettuato una richiesta
         switch(this.funzioneRichiesta)
@@ -97,7 +122,7 @@ public class Gioco {
                 this.mazzoCarteScartate.pushMano(this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getManoGiocatore());
 
                 //eliminazione mano del giocatore che ha richiesto la funzione passa
-                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getManoGiocatore().svuotaMano();
+                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getManoGiocatore().svuotaMano(this.mazzoCarteScartate);
 
                 //invio al client temporaneo l'informazione utile, in questo caso viene svuotata la sua mano
                 this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, "svuotaMano");
@@ -111,6 +136,15 @@ public class Gioco {
 
                 break;
 
+            case "showdown":
+                    //TODO -> visulizzazione generale carte
+
+                    this.statusRound = false;
+                    this.svuotaMani();
+
+                    //invio al client temporaneo l'informazione utile, in questo caso viene svuotata la sua mano
+                    this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, "roundTerminato");
+                break;
 
             default:
                 break;
