@@ -17,18 +17,29 @@ public class GestioneGiocatori {
     }
 
     //metodo per aggiungere un nuovo giocatore alla lista
-    public boolean push(Giocatore giocatore)
+    public boolean aggiungiGiocatore(Giocatore giocatore)
     {
-        if(this.listaGiocatori.size() < 3) { this.listaGiocatori.add(giocatore); return false; }
+        if(this.listaGiocatori.size() < 3) { this.listaGiocatori.add(giocatore); return true; }
         else return false;
     }
 
     //metodo per ottenere un determinato giocatore
-    public int trovaClient(Socket tmpSocket)
+    public int trovaPosizioneCliente(Socket tmpSocket)
     {
-        return this.scorriLista(tmpSocket);
+        return this.posizioneGiocatore(tmpSocket);
     }
 
+    //metodo per ottenere direttamente il giocatore utile
+    public Giocatore ottieniGiocatore(Socket socketClient) {
+        for (Giocatore giocatore : this.listaGiocatori) {
+            if (giocatore.getSocket().equals(socketClient)) {
+                return giocatore;
+            }
+        }
+        return null;
+    }
+
+    /* 
     //metodo da usare nel gioco per attivare e disattivare il turno di ogni giocatore alla fine prima di chiudere la connessione
     //set turno giocatore a true o false
     public void setTurnoGiocatore(Socket sClientTemp, boolean turno) {
@@ -37,19 +48,20 @@ public class GestioneGiocatori {
                 this.listaGiocatori.get(i).setUrTurn(turno);
         }
     }
+    */
 
     //metodo per controllare se un client già connesso tenta di riconnettersi alla partita
     public boolean controllaDuplicati(Socket sClientTemp)
     {   
         //controllo se il client si è già connesso in precedenza o no
-        if(this.scorriLista(sClientTemp) >= 0)
+        if(this.posizioneGiocatore(sClientTemp) >= 0)
             return true;
         else 
             return false;
     }
 
     //metodo per scorrere tutta la lista di giocatori
-    private int scorriLista(Socket sClientTemp)
+    private int posizioneGiocatore(Socket sClientTemp)
     {
         //scorrimento lista
         for(int i = 0; i < this.listaGiocatori.size();i++){

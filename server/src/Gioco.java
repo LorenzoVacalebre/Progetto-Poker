@@ -46,6 +46,9 @@ public class Gioco {
     //metodo utile a restituire il client
     public boolean getStatus() { return this.status;}
 
+    //metodo utile a ottenere indietro la lista dei giocatori modificata
+    public GestioneGiocatori getListaGiocatori(){ return this.listaGiocatori; }
+
     //metodo utile ad avviare il gioco
     public void creaMazzi()
     {
@@ -61,9 +64,20 @@ public class Gioco {
     }
 
     //metodo per distribuire le carte a tutti i giocatori
-    public void distribuisciCarte()
+    private Carta distribuisciCarta()
     {
-        
+        return this.mazzoDaGioco.pull();
+    }
+
+    //metodo utile a ricavare il giocatore a cui bisogna distribuire la carta
+    public void trovaGiocatoreEInserisciCartaInMano() throws IOException
+    {
+        this.listaGiocatori.ottieniGiocatore(this.socketClientTmp).getManoGiocatore().push(this.distribuisciCarta());
+        int posCartaInserita = this.listaGiocatori.ottieniGiocatore(this.socketClientTmp).getManoGiocatore().size() - 1;
+        Carta tmp = this.listaGiocatori.ottieniGiocatore(this.socketClientTmp).getManoGiocatore().get(posCartaInserita);
+
+        //invio al client temporaneo l'informazione utile, in questo caso viene svuotata la sua mano
+        this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, tmp.getNumero() + ";" + tmp.getSeme() + ";" + tmp.getIsFacedUp());
     }
 
     //metodo utile a giocare il turno al client che ha effettuato la richiesta al server
@@ -87,6 +101,10 @@ public class Gioco {
 
                 //invio al client temporaneo l'informazione utile, in questo caso viene svuotata la sua mano
                 this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, "svuotaMano");
+
+                //il giocatore non parteciperà più al round
+                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).setStatusPresenza(false);
+
                 break;
             case "rilancia":
 

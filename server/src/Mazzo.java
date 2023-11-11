@@ -57,10 +57,11 @@ public class Mazzo {
     }
 
     //metodo utile ad estrarre carte dal mazzo
-    public void pull()
+    public Carta pull()
     {
         if (!mazzo.isEmpty()) 
-            mazzo.remove(this.mazzo.size() - 1);
+            return mazzo.remove(this.mazzo.size() - 1);
+        return null;  
     }
 
     //metodo utile al controllo del mazzo cioè se vieni implementato correttamente

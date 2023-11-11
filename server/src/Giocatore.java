@@ -15,12 +15,27 @@ public class Giocatore {
     //attributo utile a capire se è il turno del giocatore o no
     private boolean urTurn;
 
+    //attributo utile a capire se il giocatore è ancora in gioco o no
+    private boolean statusPresenza = true;
+
+    //get se giocatore è ancora in partita o no
+    public boolean getStatusPresenza() { return statusPresenza; }
+
+    //set presenza giocatore in partita
+    public void setStatusPresenza(boolean statusPresenza) { this.statusPresenza = statusPresenza;}
+
     //costruttore di default
     public Giocatore(Socket socketClient)
     {
         this.socketDelGiocatore = socketClient;
         this.manoGiocatore = new ManoGiocatore();
         this.urTurn = false;
+    }
+
+    //get urTurn
+    public boolean getUrTurn()
+    {
+        return this.urTurn;
     }
 
     //get socket

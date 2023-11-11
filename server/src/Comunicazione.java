@@ -54,7 +54,7 @@ public class Comunicazione {
                         this.gioco.creaMazzi(); //creazione mazzi
                     }
                     else
-                        this.mantieniServerInAscolto(); //metodo utile a leggere continuamente tutte le richieste del client
+                        this.leggiRichiesteDeiClient(); //metodo utile a leggere continuamente tutte le richieste del client
                 }
             }
         } catch (IOException e) {
@@ -76,7 +76,7 @@ public class Comunicazione {
             Giocatore g = new Giocatore(clientSocket);
 
             //aggiunta giocatore alla lista di giocatori presenti in partita
-            this.listaGiocatori.push(g);
+            this.listaGiocatori.aggiungiGiocatore(g);
 
             //metodo per chiudere la connessione
             this.chiudiConnessione(clientSocket);
@@ -88,30 +88,44 @@ public class Comunicazione {
         //inserimento lista completa dei 3 giocatori all'interno del gioco
         if(numeroDiClientConnessi == 3){
             this.gioco = new Gioco(listaGiocatori);//inzio nuovo gioco
-            this.gioco.distribuisciCarte();
         }
     }
 
     //metodo utile a leggere continuamente tutte le richieste del client
-    private void mantieniServerInAscolto() throws IOException {
+    private void leggiRichiesteDeiClient() throws IOException {
 
         //inzializzazione socket con client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
 
         //salvataggio client che effettua richiesta
-        int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaClient(clientSocket);
+        int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneCliente(clientSocket);
         this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
         this.gioco.setSocketClientTmp(clientSocket);
 
+        //è il turno del giocatore 
+        this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(true);
+
         //salvataggio richiesta di uno dei client nel gioco
-        this.invioRichiestaAlGioco(clientSocket);
+        this.riceviRichiestaDalClient(clientSocket);
 
-        //se il gioco è attivo
-        if(this.gioco.getStatus() == true)
-            this.gioco.eseguiMano();
+        //se il giocatore è ancora presente nel round
+        if(this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).getStatusPresenza() == true)
+        {
+            //inserimento carta dal mazzo alla mano del giocatore
+            this.gioco.trovaGiocatoreEInserisciCartaInMano();
 
-        //metodo per chiudere la connessione
-        this.chiudiConnessione(clientSocket);
+            //se il gioco è attivo
+            if(this.gioco.getStatus() == true)
+                this.gioco.eseguiMano();
+        } 
+        else
+        {
+            //metodo per chiudere la connessione
+            this.chiudiConnessione(clientSocket);
+        }
+
+        //copio la lista modificata dal gioco nella comunicazione
+        this.listaGiocatori = this.gioco.getListaGiocatori();
     }
 
     //metodo utile alla chiusura di una connessione 
@@ -124,11 +138,12 @@ public class Comunicazione {
     }
 
     //salvataggio funzione richiesta da uno dei client nel gioco
-    public void invioRichiestaAlGioco(Socket clientSocket) throws IOException
+    public void riceviRichiestaDalClient(Socket clientSocket) throws IOException
     {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
             String funzioneRichiesta = in.readLine();
             this.gioco.setFunzioneRichiesta(funzioneRichiesta);
+            in.close();
         }
     } 
 
