@@ -13,9 +13,39 @@ public class App {
         communication = new comunicazione();
         if(game.isClose == false)
         {
-            communication.output("avvia,1");
+            communication.output("avvia;1"); //avvio la partita
+            scommettiClient();
+            passaClient();
+            leftGameClient();
         }
        
+    }
+
+    private static void scommettiClient() throws IOException
+    {
+        if(game.isScommesso == true)
+        {
+            communication.output("scommetti;" + game.puntata); //scommetto
+            game.isScommesso = false;
+        }
+    }
+
+    private static void passaClient() throws IOException
+    {
+        if(game.isPassato == true)
+        {
+            communication.output("passa;"); //comunica di passare la mano
+            game.isPassato = false;
+        }
+    }
+
+    private static void leftGameClient() throws IOException
+    {
+        if(game.isAbbandonato == true)
+        {
+            communication.output("abbandona;client1"); //abbandona la partita
+            game.isAbbandonato = false;
+        }
     }
 
     

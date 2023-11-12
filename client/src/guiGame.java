@@ -12,6 +12,8 @@ import javax.swing.*;
 
 public class guiGame extends JFrame 
 {
+    private static int PUNTATA_MASSIMA = 1000;
+
     private BufferedImage immagineSfondo;
     private JPanel pannelloSfondo;
     private GridBagConstraints contenitore;
@@ -19,11 +21,31 @@ public class guiGame extends JFrame
     private BufferedImage imgGiocatore;
     private BufferedImage imgDealer;
     public boolean isClose;
+    public int puntata;
+
+    public boolean isScommesso;
+    public boolean isPassato;
+    public boolean isAbbandonato;
+
+    private JButton scommetti;
+    private JButton passa;
+    private JButton alzaPuntata;
+
+    
 
     public guiGame() throws IOException 
     {
         //valore che mi permette di capire quando cambiare pagina e avviare la comunicazione dal main
         isClose = true;
+
+        //variabile che mi fa capire se il client vuole scommettere
+        isScommesso = false;
+
+        //variavile che mi permette di far abbandonare la partita al client
+        isAbbandonato = false;
+
+        //valore che poi invio al client relativo alla puntata
+        puntata = 0;
         
         //sfondo
         immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
@@ -31,8 +53,56 @@ public class guiGame extends JFrame
         contenitore = new GridBagConstraints();
         pannelloSfondo.setLayout(new GridBagLayout());
 
+        //bottone scommetti
+        scommetti = new JButton("Scommetti");
+        scommetti.setPreferredSize(new Dimension(200, 50));
+        scommetti.setFont(new Font("Arial", Font.PLAIN, 20));
+        this.addComponent(500, 1200, 0, 0, scommetti);
+        scommetti.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)  
+            {
+                isScommesso = true;
+            }
+        });
+
+        //bottone passa
+        passa = new JButton("Passa");
+        passa.setPreferredSize(new Dimension(200, 50));
+        passa.setFont(new Font("Arial", Font.PLAIN, 20));
+        this.addComponent(700, 1200, 0, 0, passa);
+        passa.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)  
+            {
+                isPassato = true;
+            }
+        });
+
+        //bottone alza la puntata
+        alzaPuntata = new JButton("Alza la puntata");
+        alzaPuntata.setPreferredSize(new Dimension(200, 50));
+        alzaPuntata.setFont(new Font("Arial", Font.PLAIN, 20));
+        this.addComponent(600, 1200, 0, 0, alzaPuntata);
+        alzaPuntata.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)  
+            {
+                if(puntata == PUNTATA_MASSIMA)
+                {
+                    puntata = 0;
+                }
+                else
+                    puntata += 100;
+                
+            }
+        });
+        
         //menu a tendina
-        String[] opzioniMenu = {"Menù Funzionalità", "Regolamento"};
+        String[] opzioniMenu = {"Menù Funzionalità", "Regolamento", "Abbandona partita"};
         menuTendina = new JComboBox<>(opzioniMenu);
         menuTendina.setPreferredSize(new Dimension(200, 40));
         menuTendina.setFont(new Font("Arial", Font.PLAIN, 17));
@@ -47,13 +117,13 @@ public class guiGame extends JFrame
                 {
                     try {
                         actionRules();
+                        leftGame();
                     } catch (IOException | URISyntaxException ex) {
                         ex.printStackTrace();
                     }
                 }
             });
         
-
         //immagini dei giocatori
         imgGiocatore = ImageIO.read(new File("client/immagini/imgGiocatore.png"));
         imgGiocatore = resizeImage(imgGiocatore, 70, 70); 
@@ -111,6 +181,15 @@ public class guiGame extends JFrame
     private void exploreUrl(String url) throws IOException, URISyntaxException 
     {
         Desktop.getDesktop().browse(new URI(url));
+    }
+
+    private void leftGame() throws IOException, URISyntaxException 
+    {
+        if ("Abbandona partita".equals(menuTendina.getSelectedItem()))
+        {
+            this.isAbbandonato = true;
+            setVisible(false);
+        } 
     }
 
     //metodo che ridimensiona un'immagine
