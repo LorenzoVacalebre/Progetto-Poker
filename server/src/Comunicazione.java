@@ -269,7 +269,7 @@ public class Comunicazione {
     ////////////////////////////////////////////////////////////////////////////////
     //METODO UTILE AI TEST PER VERIFICARE IL FUNZIONAMENTO DELLA COMUNICAZIONE TCP//
     ////////////////////////////////////////////////////////////////////////////////
-    private void comunicazioneTest()
+    /*private void comunicazioneTest()
     {
         try {
             System.out.println("Server in ascolto sulla porta " + this.port);
@@ -294,5 +294,6 @@ public class Comunicazione {
             e.printStackTrace();
         }
     }
+    */
     ////////////////////////////////////////////////////////////////////////////////
 }
