@@ -13,7 +13,6 @@ public class App {
         communication = new comunicazione();
         if(game.isClose == false)
         {
-            
             communication.output("avvia,1");
         }
        
