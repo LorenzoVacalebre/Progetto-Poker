@@ -25,6 +25,9 @@ public class Comunicazione {
     //fase
     private int nFase = 0;
 
+    //cè già un giocatore connesso?
+    private boolean unGiocatoreConnesso = false;
+
     /////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
 
@@ -67,27 +70,36 @@ public class Comunicazione {
 
     //metodo gestione singole connessioni iniziali
     private void gestisciConnessioneSingoloClient() throws IOException {
+
         //inizializzazione socket con il client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
 
         //controllo se un client prova a collegarsi su una socket già presente 
         //(non dovrebbe poter succedere, controllo per maggiore sicurezza)
-        if(this.listaGiocatori.controllaDuplicati(clientSocket) == true)
+        if(this.listaGiocatori.controllaDuplicati(clientSocket) == true) {
             this.chiudiConnessione(clientSocket);
-        else {
-            //creazione nuovo giocatore temporaneo
-            Giocatore g = new Giocatore(clientSocket);
-
-            //aggiunta giocatore alla lista di giocatori presenti in partita
-            this.listaGiocatori.aggiungiGiocatore(g);
-
-            //metodo per chiudere la connessione
-            this.chiudiConnessione(clientSocket);
-        
-            //incremento numero di client connessi al server
-            this.numeroDiClientConnessi++;
+            return;
         }
 
+        //se cè un giocatore connesso, dire agli altri di unirsi alla partita
+        if(this.unGiocatoreConnesso == true)
+            this.invioInformazioniAlClient(clientSocket, "partitaOnline");
+        //se no dire al server che un giocatore si è già connesso
+        else
+            this.unGiocatoreConnesso = true;
+
+        //creazione nuovo giocatore temporaneo
+        Giocatore g = new Giocatore(clientSocket);
+
+        //aggiunta giocatore alla lista di giocatori presenti in partita
+        this.listaGiocatori.aggiungiGiocatore(g);
+
+        //metodo per chiudere la connessione
+        this.chiudiConnessione(clientSocket);
+    
+        //incremento numero di client connessi al server
+        this.numeroDiClientConnessi++;
+        
         //inserimento lista completa dei 3 giocatori all'interno del gioco
         if(numeroDiClientConnessi == 3){
             this.gioco = new Gioco(listaGiocatori);//inizio nuovo gioco
