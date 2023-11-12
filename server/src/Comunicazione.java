@@ -22,6 +22,9 @@ public class Comunicazione {
     //gioco
     private Gioco gioco;
 
+    //fase
+    private int nFase = 0;
+
     /////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
 
@@ -87,7 +90,7 @@ public class Comunicazione {
 
         //inserimento lista completa dei 3 giocatori all'interno del gioco
         if(numeroDiClientConnessi == 3){
-            this.gioco = new Gioco(listaGiocatori);//inzio nuovo gioco
+            this.gioco = new Gioco(listaGiocatori);//inizio nuovo gioco
         }
     }
 
@@ -99,50 +102,98 @@ public class Comunicazione {
 
         //salvataggio client che effettua richiesta
         int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneClient(clientSocket);
-        this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
-        this.gioco.setSocketClientTmp(clientSocket);
-
-        //è il turno del giocatore 
-        this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(true);
-
-        //salvataggio richiesta di uno dei client nel gioco
-        this.riceviRichiestaDalClient(clientSocket);
 
         //se il giocatore è ancora presente nel round
         if(this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).getStatusPresenza() == true)
         {
+            this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
+            this.gioco.setSocketClientTmp(clientSocket);
+
+            //è il turno del giocatore 
+            this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(true);
+            
+            /////APPOSTO///// DISTRIBUZIONE DUE CARTE A TUTTI I GIOCATORI // PRIMA FASE
             if(this.gioco.statoRound() == false) {
+
                 //inserimento carte dal mazzo alla mano del giocatore
                 this.gioco.trovaGiocatoreEInserisciCartaInMano();
                 this.gioco.trovaGiocatoreEInserisciCartaInMano();
 
-                //se il client che ha effettuato la connessione è il terzo avvio il round
-                if(this.listaGiocatori.trovaPosizioneClient(clientSocket) == 2)
-                {
+                //se il client che ha effettuato la connessione è il terzo controllo se il round è già attivo
+                if(this.listaGiocatori.trovaPosizioneClient(clientSocket) == 2) {
+                    //round a true
                     this.gioco.setStatusRoundTrue();
-                    //metodo per chiudere la connessione
-                    this.chiudiConnessione(clientSocket);
+                    //non è il turno del giocatore 
+                    this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
+                    this.nFase = 2;
                 }
                 else
-                {
-                    //metodo per chiudere la connessione
-                    this.chiudiConnessione(clientSocket);
-                }
-            }else
+                    //non è il turno del giocatore 
+                    this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
+            }
+            else
             {
-                //se il gioco è attivo
-                if(this.gioco.getStatus() == true)
-                    this.gioco.eseguiMano();
+                //salvataggio richiesta di uno dei client nel gioco
+                //Allegamento puntata (punta/*numero*)
+                this.riceviRichiestaDalClient(clientSocket);
+                switch(this.nFase)
+                {
+                    case 2:
+                        //esegui la mano
+                        this.eseguiTurno(clientSocket,posClientCheEffettuaRichiesta);
+                        break;
+                    case 3: 
+                        //aggiungo carta al flop
+                        this.gioco.distribuisciFlop();
 
-                //metodo per chiudere la connessione
-                this.chiudiConnessione(clientSocket);
+                        //invio a tutti il nuovo flop
+                        this.inviaInfoATutti();
+
+                        this.nFase++;
+                        break;
+                    case 4:
+                        //esegui la mano
+                        this.eseguiTurno(clientSocket,posClientCheEffettuaRichiesta);
+                        break;
+                    case 5:
+                        //aggiungo carta al flop
+                        this.gioco.aggiungiCartaFlop();
+
+                        //invio a tutti il nuovo flop
+                        this.inviaInfoATutti();
+                        this.nFase++;
+                        break;
+                    case 6:
+                        //esegui la mano
+                        this.eseguiTurno(clientSocket,posClientCheEffettuaRichiesta);
+                        break;
+                    case 7:
+                        //aggiungo carta al flop
+                        this.gioco.aggiungiCartaFlop();
+
+                        //invio a tutti il nuovo flop
+                        this.inviaInfoATutti();
+                        this.nFase++;
+                        break;
+                    case 8:
+                        //esegui la mano
+                        this.eseguiTurno(clientSocket,posClientCheEffettuaRichiesta);
+                        break;
+                    case 9:
+                        //visualizzazione tutte le carte
+                        this.gioco.showDown();
+
+                        //assegno il piatto al vincitore
+                        this.gioco.assegnazionePiatto();
+                        break;
+                    default:
+                        break;
+                }
             }
         } 
-        else
-        {
-            //metodo per chiudere la connessione
-            this.chiudiConnessione(clientSocket);
-        }
+
+        //metodo per chiudere la connessione
+        this.chiudiConnessione(clientSocket);
 
         //copio la lista modificata dal gioco nella comunicazione
         this.listaGiocatori = this.gioco.getListaGiocatori();
@@ -163,7 +214,6 @@ public class Comunicazione {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
             String funzioneRichiesta = in.readLine();
             this.gioco.setFunzioneRichiesta(funzioneRichiesta);
-            in.close();
         }
     } 
 
@@ -173,6 +223,49 @@ public class Comunicazione {
         outputStream.write(messaggio.getBytes());
     } 
 
+    //metodo per inviare le informazioni a ogni client
+    private void inviaInfoATutti() throws IOException
+    {
+        for(int i = 0; i < this.listaGiocatori.size(); i++)
+            invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "flop/" + this.gioco.flopToString());
+    }
+
+    //metodo per inviare le informazioni a ogni client
+    public void inviaInfoATuttiFine() throws IOException
+    {
+        for(int i = 0; i < this.listaGiocatori.size(); i++)
+            invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "fine");
+    }
+
+    //metodo per scoprire tutte le carte
+    public void inviaInfoATuttiScopriCarte() throws IOException
+    {
+        for(int i = 0; i < this.listaGiocatori.size(); i++)
+            invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "scopriTutto");
+    }
+
+    //metodo per eseguire un turno
+    private void eseguiTurno(Socket clientSocket, int posClientCheEffettuaRichiesta) throws IOException
+    {
+        if((this.listaGiocatori.trovaPosizioneClient(clientSocket) != 2))
+        {
+            //se il gioco è attivo
+            if(this.gioco.getStatus() == true)
+                this.gioco.eseguiMano(); //esegui la mano
+            //non è il turno del giocatore 
+            this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
+            this.nFase++;
+        }
+        else 
+        {
+            //se il gioco è attivo
+            if(this.gioco.getStatus() == true)
+                this.gioco.eseguiMano(); //esegui la mano
+
+            //non è il turno del giocatore 
+            this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
+        }
+    }
     ////////////////////////////////////////////////////////////////////////////////
     //METODO UTILE AI TEST PER VERIFICARE IL FUNZIONAMENTO DELLA COMUNICAZIONE TCP//
     ////////////////////////////////////////////////////////////////////////////////

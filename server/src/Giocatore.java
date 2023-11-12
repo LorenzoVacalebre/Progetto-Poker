@@ -18,6 +18,9 @@ public class Giocatore {
     //attributo utile a capire se il giocatore è ancora in gioco o no
     private boolean statusPresenza = true;
 
+    //attributo puntata del giocatore
+    private float puntata = 0;
+
     //get se giocatore è ancora in partita o no
     public boolean getStatusPresenza() { return statusPresenza; }
 
@@ -54,5 +57,23 @@ public class Giocatore {
     public void setUrTurn(boolean stato)
     {
         this.urTurn = stato;
+    }
+
+    //metodo per aggiungere la puntata
+    public void addPuntata(float p)
+    {
+        this.puntata = p;
+    }
+
+    //metodo per sommare puntate
+    public void addPuntata2(String p)
+    {
+        this.puntata += Float.parseFloat(p);
+    }
+
+    //metodo get puntata
+    public float getPuntata()
+    {
+        return this.puntata;
     }
 }

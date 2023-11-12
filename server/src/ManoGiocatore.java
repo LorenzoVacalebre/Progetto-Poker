@@ -9,11 +9,24 @@ import java.util.List;
 public class ManoGiocatore {
     //lista contenente mano del giocatore
     private List<Carta> manoGiocatore;
+    private String combinazioneCarte;
+
+    //ritorna la combinazione della mano 
+    public String getCombinazioneCarte() { return combinazioneCarte; }
+
+    //setta una valore alla combinazione delle carte
+    public void setCombinazioneCarte(String combinazioneCarte) { this.combinazioneCarte = combinazioneCarte; }
 
     //costruttore di default
     public ManoGiocatore()
     {
         this.manoGiocatore = new ArrayList<Carta>();
+    }
+
+    //metodo per restituire la lista
+    public List<Carta> mano()
+    {
+        return this.manoGiocatore;
     }
 
     //metodo utile per inserire una carta nella mano del giocatore
@@ -49,12 +62,33 @@ public class ManoGiocatore {
         return this.manoGiocatore.get(p);
     }
 
+    //metodo utile a restituire l'ultima carta inserita
+    public Carta getLast()
+    {
+        return this.manoGiocatore.get(this.manoGiocatore.size() - 1);
+    }
+
     //metodo utile a svuotare la propria mano (cambio round)
     public void svuotaMano(Mazzo carteScartate)
     {
         for(int i = 0; i < this.manoGiocatore.size(); i++)
             carteScartate.push(this.manoGiocatore.get(i));
         this.manoGiocatore.clear();
+    }
+
+    //metodo per mettere insieme la mano del giocatore al flop
+    public ManoGiocatore mettiInsiemeMano(Mazzo flop)
+    {
+        //mano temporanea
+        ManoGiocatore tmp = new ManoGiocatore();
+
+        //formazione mazzo nuovo dato flop e mano giocatore
+        for(int i = 0; i < this.manoGiocatore.size(); i++)
+            tmp.push(this.manoGiocatore.get(i));
+        for(int i = 0; i < flop.getSize(); i++)
+            tmp.push(flop.getCarta(i));
+
+        return tmp;
     }
 
 }

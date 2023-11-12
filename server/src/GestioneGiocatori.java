@@ -32,7 +32,7 @@ public class GestioneGiocatori {
     //metodo per ottenere direttamente il giocatore utile
     public Giocatore ottieniGiocatore(Socket socketClient) {
         for (Giocatore giocatore : this.listaGiocatori) {
-            if (giocatore.getSocket().equals(socketClient)) {
+            if (giocatore.getSocket().getInetAddress().equals(socketClient.getInetAddress())) {
                 return giocatore;
             }
         }
@@ -44,7 +44,7 @@ public class GestioneGiocatori {
     //set turno giocatore a true o false
     public void setTurnoGiocatore(Socket sClientTemp, boolean turno) {
         for (int i = 0; i < this.listaGiocatori.size(); i++) {
-            if (this.listaGiocatori.get(i).getSocket().equals(sClientTemp)) 
+            if (this.listaGiocatori.get(i).getSocket().getInetAddress().equals(sClientTemp.getInetAddress())) 
                 this.listaGiocatori.get(i).setUrTurn(turno);
         }
     }
@@ -66,7 +66,7 @@ public class GestioneGiocatori {
         //scorrimento lista
         for(int i = 0; i < this.listaGiocatori.size();i++){
             //se client si è già connesso in precedenza
-            if(this.listaGiocatori.get(i).getSocket().equals(sClientTemp))
+            if(this.listaGiocatori.get(i).getSocket().getInetAddress().equals(sClientTemp.getInetAddress()))
                 return i;
         }
         return -1;
@@ -78,6 +78,7 @@ public class GestioneGiocatori {
         return this.listaGiocatori.get(posG);
     }
 
+    //metodo per restituire la grandezza della lista
     public int size() {
         return this.listaGiocatori.size();
     }
