@@ -25,7 +25,7 @@ public class guiStart extends JFrame
     {
         
         //sfondo
-        immagineSfondo = ImageIO.read(new File("poker/client/immagini/tavolo.jpg"));
+        immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
         pannelloSfondo = creaPannelloConSfondo();
         contenitore = new GridBagConstraints();
         pannelloSfondo.setLayout(new GridBagLayout());
@@ -77,19 +77,19 @@ public class guiStart extends JFrame
         
 
         //immagini dei giocatori
-        imgGiocatore = ImageIO.read(new File("poker/client/immagini/imgGiocatore.png"));
+        imgGiocatore = ImageIO.read(new File("client/immagini/imgGiocatore.png"));
         imgGiocatore = resizeImage(imgGiocatore, 70, 70); 
         this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
         this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
         this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
 
         //immagine del dealer
-        imgDealer = ImageIO.read(new File("poker/client/immagini/dealer.png"));
-        imgDealer = resizeImage(imgDealer, 180, 180); 
+        imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
+        imgDealer = resizeImage(imgDealer, 255, 200); 
         this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
 
         //immagine del casino
-        imgCasino = ImageIO.read(new File("poker/client/immagini/scrittaPoker.png"));
+        imgCasino = ImageIO.read(new File("client/immagini/scrittaPoker.png"));
         imgCasino = resizeImage(imgCasino, 600, 300); 
         this.addComponent(50, 20, 0, 0, new JLabel(new ImageIcon(imgCasino)));
 

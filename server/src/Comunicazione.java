@@ -108,7 +108,6 @@ public class Comunicazione {
         //salvataggio richiesta di uno dei client nel gioco
         this.riceviRichiestaDalClient(clientSocket);
 
-        //se è il primo giocatore
         //se il giocatore è ancora presente nel round
         if(this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).getStatusPresenza() == true)
         {

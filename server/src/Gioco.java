@@ -113,10 +113,6 @@ public class Gioco {
         //la mano del giocatore stesso dato il client che ha effettuato una richiesta
         switch(this.funzioneRichiesta)
         {
-            case "scommetti":
-
-
-                break;
             case "passa":
                 //inserimento carte scartate nel mazzo corretto
                 this.mazzoCarteScartate.pushMano(this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getManoGiocatore());
@@ -131,11 +127,15 @@ public class Gioco {
                 this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).setStatusPresenza(false);
 
                 break;
-            case "rilancia":
+
+            case "chiama":
 
 
                 break;
 
+            case "alzaPuntata":
+            
+                break;
             case "showdown":
                     //TODO -> visulizzazione generale carte
 

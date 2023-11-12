@@ -41,8 +41,10 @@ public class Carta {
         System.out.println(this.seme + " ");
         System.out.println(this.isFaceUp + " ");
     }
-    public String getIsFacedUp() {
-        return null;
+
+    //metodo utile a ritornare se la carta è scoperta o no
+    public boolean getIsFacedUp() {
+        return this.isFaceUp;
     }
 
 }
