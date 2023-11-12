@@ -10,19 +10,22 @@ import java.net.URISyntaxException;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
-public class guiStart extends JFrame {
+public class guiStart extends JFrame 
+{
     private BufferedImage immagineSfondo;
     private JPanel pannelloSfondo;
     private GridBagConstraints contenitore;
     private JButton start;
     private JComboBox<String> menuTendina;
     private BufferedImage imgGiocatore;
-
+    private BufferedImage imgDealer;
+    private BufferedImage imgCasino;
 
     public guiStart() throws IOException 
     {
+        
         //sfondo
-        immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
+        immagineSfondo = ImageIO.read(new File("poker/client/immagini/tavolo.jpg"));
         pannelloSfondo = creaPannelloConSfondo();
         contenitore = new GridBagConstraints();
         pannelloSfondo.setLayout(new GridBagLayout());
@@ -31,7 +34,24 @@ public class guiStart extends JFrame {
         start = new JButton("Inizia la partita");
         start.setPreferredSize(new Dimension(200, 50));
         start.setFont(new Font("Arial", Font.PLAIN, 20));
-        this.addComponent(650, 20, 0, 0, start);
+        this.addComponent(770, 20, 0, 0, start);
+        start.addActionListener(new ActionListener() 
+        {
+            @Override
+            public void actionPerformed(ActionEvent e) 
+            {
+                guiGame game;
+                try {
+                    game = new guiGame();
+                    setVisible(false);
+                    game.isClose = false;
+                    game.setVisible(true);
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
+            }
+        });
 
         //menu a tendina
         String[] opzioniMenu = {"Menù Funzionalità", "Regolamento"};
@@ -55,29 +75,42 @@ public class guiStart extends JFrame {
                 }
             });
         
-        //imgGiocatore = ImageIO.read(new File("client/immagini/postazioneGiocatore.jpg"));
-        //this.addComponent(0, 100, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
-        //this.addComponent(200, 0, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
-        //this.addComponent(0, 0, 200, 0, new JLabel(new ImageIcon(imgGiocatore)));
-        //this.addComponent(0, 0, 0, 100, new JLabel(new ImageIcon(imgGiocatore)));
+
+        //immagini dei giocatori
+        imgGiocatore = ImageIO.read(new File("poker/client/immagini/imgGiocatore.png"));
+        imgGiocatore = resizeImage(imgGiocatore, 70, 70); 
+        this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
+        this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
+        this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
+
+        //immagine del dealer
+        imgDealer = ImageIO.read(new File("poker/client/immagini/dealer.png"));
+        imgDealer = resizeImage(imgDealer, 180, 180); 
+        this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
+
+        //immagine del casino
+        imgCasino = ImageIO.read(new File("poker/client/immagini/scrittaPoker.png"));
+        imgCasino = resizeImage(imgCasino, 600, 300); 
+        this.addComponent(50, 20, 0, 0, new JLabel(new ImageIcon(imgCasino)));
 
 
         //impostazioni di default
-        setTitle("Poker.com");
+        setTitle("Casino.com");
         add(pannelloSfondo);
         setSize(1500, 900);
         //chiudo la finestra e chiudo anche il "programma"
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        
     }
 
     //metodo che mi permette di posizionare qualsiasi componente e di posizionarlo
-    private void addComponent(int sx, int up, int dx, int down, JComponent component) 
+    private void addComponent(int daSu, int daSinistra, int daGiu, int daDestra, JComponent component) 
     {
         contenitore.gridx = 0;
         contenitore.gridy = 1;
         //distanze da i margini
-        contenitore.insets = new Insets(sx, up, dx, down);
+        contenitore.insets = new Insets(daSu, daSinistra, daGiu, daDestra);
         pannelloSfondo.add(component, contenitore);
     }
 
@@ -109,4 +142,19 @@ public class guiStart extends JFrame {
         Desktop.getDesktop().browse(new URI(url));
     }
 
+    //metodo che ridimensiona un'immagine
+    private BufferedImage resizeImage(BufferedImage img, int larghezza, int altezza) 
+    {
+        //creo un'immagine temporanea con le nuove dimensioni
+        Image tmp = img.getScaledInstance(larghezza, altezza, Image.SCALE_SMOOTH);   
+        BufferedImage resizedImage = new BufferedImage(larghezza, altezza, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = resizedImage.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return resizedImage;
+    }
+
 }
+

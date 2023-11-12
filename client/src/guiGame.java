@@ -1,4 +1,131 @@
-public class guiGame 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
+public class guiGame extends JFrame 
 {
-    
+    private BufferedImage immagineSfondo;
+    private JPanel pannelloSfondo;
+    private GridBagConstraints contenitore;
+    private JComboBox<String> menuTendina;
+    private BufferedImage imgGiocatore;
+    private BufferedImage imgDealer;
+    public boolean isClose;
+
+    public guiGame() throws IOException 
+    {
+        //valore che mi permette di capire quando cambiare pagina e avviare la comunicazione dal main
+        isClose = true;
+        
+        //sfondo
+        immagineSfondo = ImageIO.read(new File("poker/client/immagini/tavolo.jpg"));
+        pannelloSfondo = creaPannelloConSfondo();
+        contenitore = new GridBagConstraints();
+        pannelloSfondo.setLayout(new GridBagLayout());
+
+        //menu a tendina
+        String[] opzioniMenu = {"Menù Funzionalità", "Regolamento"};
+        menuTendina = new JComboBox<>(opzioniMenu);
+        menuTendina.setPreferredSize(new Dimension(200, 40));
+        menuTendina.setFont(new Font("Arial", Font.PLAIN, 17));
+        this.addComponent(0, 1200, 700, 0, menuTendina);
+
+            //regolamento
+            menuTendina.addActionListener(new ActionListener()
+            //anonymous inner class: serve per creare una classe "leggera" o allungare una classe gia esistente
+            {
+                @Override
+                public void actionPerformed(ActionEvent e) 
+                {
+                    try {
+                        actionRules();
+                    } catch (IOException | URISyntaxException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        
+
+        //immagini dei giocatori
+        imgGiocatore = ImageIO.read(new File("poker/client/immagini/imgGiocatore.png"));
+        imgGiocatore = resizeImage(imgGiocatore, 70, 70); 
+        this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
+        this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
+        this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
+
+        //immagine del dealer
+        imgDealer = ImageIO.read(new File("poker/client/immagini/dealer.png"));
+        imgDealer = resizeImage(imgDealer, 180, 180); 
+        this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
+
+        //impostazioni di default
+        setTitle("Casino.com");
+        add(pannelloSfondo);
+        setSize(1500, 900);
+        //chiudo la finestra e chiudo anche il "programma"
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+    }
+
+    //metodo che mi permette di posizionare qualsiasi componente e di posizionarlo
+    private void addComponent(int daSu, int daSinistra, int daGiu, int daDestra, JComponent component) 
+    {
+        contenitore.gridx = 0;
+        contenitore.gridy = 1;
+        //distanze da i margini
+        contenitore.insets = new Insets(daSu, daSinistra, daGiu, daDestra);
+        pannelloSfondo.add(component, contenitore);
+    }
+
+    private JPanel creaPannelloConSfondo() 
+    {
+        return new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                disegnaSfondo(g);
+            }
+        };
+    }
+
+    private void disegnaSfondo(Graphics g) 
+    {
+        if (immagineSfondo != null)
+            g.drawImage(immagineSfondo, 0, 0, getWidth(), getHeight(), this);
+    }
+
+    private void actionRules() throws IOException, URISyntaxException 
+    {
+        if ("Regolamento".equals(menuTendina.getSelectedItem())) 
+            exploreUrl("https://poker.md/it/how-to-play-poker/");
+    }
+
+    private void exploreUrl(String url) throws IOException, URISyntaxException 
+    {
+        Desktop.getDesktop().browse(new URI(url));
+    }
+
+    //metodo che ridimensiona un'immagine
+    private BufferedImage resizeImage(BufferedImage img, int larghezza, int altezza) 
+    {
+        //creo un'immagine temporanea con le nuove dimensioni
+        Image tmp = img.getScaledInstance(larghezza, altezza, Image.SCALE_SMOOTH);   
+        BufferedImage resizedImage = new BufferedImage(larghezza, altezza, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = resizedImage.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return resizedImage;
+    }
+
 }
+
