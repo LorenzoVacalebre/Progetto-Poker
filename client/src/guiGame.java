@@ -150,7 +150,7 @@ public class guiGame extends JFrame
 
         //immagine del dealer
         imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
-        imgDealer = resizeImage(imgDealer, 255, 200); 
+        imgDealer = resizeImage(imgDealer, 320, 200); 
         this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
 
         //impostazioni di default
@@ -161,34 +161,7 @@ public class guiGame extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //immagine delle carte
-        for(int i= 0; i<this.carte.size(); i++)
-        {
-            if(this.carte.lista.get(i).getIsScoperta() == true)
-            {
-                imgcarta = ImageIO.read(new File("client/immagini/scoperta.png"));
-                imgcarta = resizeImage(imgcarta, 255, 200); 
-                if(i == 1)
-                {
-                    this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-                }
-                else
-                    this.addComponent(0, 200, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-            } 
-            else
-            {
-                imgcarta = ImageIO.read(new File("client/immagini/coperta.png"));
-                imgcarta = resizeImage(imgcarta, 255, 200); 
-                if(i == 1)
-                {
-                    this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-                }
-                else
-                    this.addComponent(0, 200, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-            }
-        }
-        imgcarta = resizeImage(imgcarta, 255, 200); 
-        this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-
+        this.mostraCarteIniziali();
         
     }
 
@@ -237,7 +210,6 @@ public class guiGame extends JFrame
             setVisible(false);
             communication.output("abbandonaPartita");
             communication.terminateConnection();
-
         } 
     }
 
@@ -258,6 +230,36 @@ public class guiGame extends JFrame
     public void inserisciErrore(String message, String title) 
     {
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    public void mostraCarteIniziali() throws IOException
+    {
+
+        for(int i= 0; i<this.carte.size(); i++)
+        {
+            if(this.carte.lista.get(i).getIsScoperta() == true)
+            {
+                imgcarta = ImageIO.read(new File("client/immagini/scoperta.png"));
+                imgcarta = resizeImage(imgcarta, 255, 200); 
+                if(i == 1)
+                {
+                    this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+                }
+                else
+                    this.addComponent(0, 200, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+            } 
+            else
+            {
+                imgcarta = ImageIO.read(new File("client/immagini/coperta.png"));
+                imgcarta = resizeImage(imgcarta, 255, 200); 
+                if(i == 1)
+                {
+                    this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+                }
+                else
+                    this.addComponent(0, 200, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+            }
+        }
     }
 
 }

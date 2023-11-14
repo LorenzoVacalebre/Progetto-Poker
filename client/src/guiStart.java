@@ -44,38 +44,34 @@ public class guiStart extends JFrame
             {
                 try 
                 {
-                    String messaggioRicevuto = "";
                     communication = new comunicazione();
                     communication.output("client1");
-                    messaggioRicevuto = communication.input();
+                    communication.output("...");
 
+                    //creo la partita solo se il server mi autorizza
+                    String linea;
+                    String vettore[];
+                    carte lista = new carte();
 
-                    if(messaggioRicevuto.equals("partitaOnline"))
+                    for(int i = 0; i < 2; i++)
                     {
-                        //creo la partita solo se il server mi autorizza
-                        String linea;
-                        String vettore[];
-                        carte lista = new carte();
-                        for(int i = 0; i<2; i++)
-                        {
-                            linea = communication.input();
-                            vettore = linea.split(";");
-                            carta c;
-                            if(vettore[2].equals("true"))
-                                c = new carta(vettore[0], vettore[1], true);
-                            else
-                                c = new carta(vettore[0], vettore[1], false);
-                            lista.addCarta(c);
-                        }
+                        linea = communication.input();
+                        System.out.println(linea);
+                        vettore = linea.split(";");
+                        carta c;
 
-                        game = new guiGame(communication, lista);
-                        setVisible(false);
-                        game.isClose = false;
-                        game.setVisible(true);
-
+                        if(vettore[2].equals("true"))
+                            c = new carta(vettore[0], vettore[1], true);
+                        else
+                            c = new carta(vettore[0], vettore[1], false);
+                        
+                        lista.addCarta(c);
                     }
-                    else
-                        communication.output("Errore all'inizio");
+
+                    game = new guiGame(communication, lista);
+                    setVisible(false);
+                    game.isClose = false;
+                    game.setVisible(true);
 
                     
                     
@@ -118,7 +114,7 @@ public class guiStart extends JFrame
 
         //immagine del dealer
         imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
-        imgDealer = resizeImage(imgDealer, 255, 200); 
+        imgDealer = resizeImage(imgDealer, 320, 200); 
         this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
 
         //immagine del casino
