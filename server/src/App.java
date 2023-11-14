@@ -4,6 +4,5 @@ public class App {
         int port = 666;
         Comunicazione communication = new Comunicazione(port);
         communication.avviaServer();
-        
     }
 }
