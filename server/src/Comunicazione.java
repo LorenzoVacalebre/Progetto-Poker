@@ -52,14 +52,14 @@ public class Comunicazione {
             //mantenimento server in ascolto
             while (true) {
                 //accetta connessione da client diversi fino a quando questi diventano 3
-                if (this.numeroDiClientConnessi < 3) {
+                if (this.numeroDiClientConnessi < 1) {
                     this.gestisciConnessioneSingoloClient();//metodo gestione singole connessioni iniziali
                 } else {
                     if(this.gioco.getStatus() == false) {
                         this.gioco.setStatusTrue(); //set stato del gioco a true
                         this.gioco.creaMazzi(); //creazione mazzi
                     }
-                    else
+                    else 
                         this.leggiRichiesteDeiClient(); //metodo utile a leggere continuamente tutte le richieste del client
                 }
             }
@@ -74,13 +74,18 @@ public class Comunicazione {
         //inizializzazione socket con il client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
 
+        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String funzioneRichiesta = in.readLine();
+        System.out.println(funzioneRichiesta);
+        
+
         //controllo se un client prova a collegarsi su una socket già presente 
         //(non dovrebbe poter succedere, controllo per maggiore sicurezza)
         if(this.listaGiocatori.controllaDuplicati(clientSocket) == true) {
             this.chiudiConnessione(clientSocket);
             return;
         }
-
+        
         //se cè un giocatore connesso, dire agli altri di unirsi alla partita
         if(this.unGiocatoreConnesso == true)
             this.invioInformazioniAlClient(clientSocket, "partitaOnline");
@@ -101,7 +106,7 @@ public class Comunicazione {
         this.numeroDiClientConnessi++;
         
         //inserimento lista completa dei 3 giocatori all'interno del gioco
-        if(numeroDiClientConnessi == 3){
+        if(numeroDiClientConnessi == 1){
             this.gioco = new Gioco(listaGiocatori);//inizio nuovo gioco
         }
     }
@@ -111,6 +116,9 @@ public class Comunicazione {
 
         //inzializzazione socket con client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
+
+        //controllo se il giocatore desidera abbandonare la partita
+        this.controlloAbbandonaPartita(clientSocket);
 
         //salvataggio client che effettua richiesta
         int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneClient(clientSocket);
@@ -205,7 +213,7 @@ public class Comunicazione {
         } 
 
         //metodo per chiudere la connessione
-        this.chiudiConnessione(clientSocket);
+        //this.chiudiConnessione(clientSocket);
 
         //copio la lista modificata dal gioco nella comunicazione
         this.listaGiocatori = this.gioco.getListaGiocatori();
@@ -220,12 +228,36 @@ public class Comunicazione {
         }
     }
 
+    //metodo per controllare se un client ha richiesto di abbandonare la partita 
+    public boolean controlloAbbandonaPartita(Socket client) throws IOException
+    {
+        //se il giocatore ha richiesto di abbandonare la partita
+        if(this.riceviRichiestaDalClientString(client).equals("abbandonaPartita")){
+            //rimuovo giocatore dalla partita
+            this.listaGiocatori.pullGiocatore(client);
+            //chiudi comunicazione
+            client.close();
+            //giocatore eliminato
+            return true;
+        }
+        return false;
+    }
+
     //salvataggio funzione richiesta da uno dei client nel gioco
     public void riceviRichiestaDalClient(Socket clientSocket) throws IOException
     {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
             String funzioneRichiesta = in.readLine();
             this.gioco.setFunzioneRichiesta(funzioneRichiesta);
+        }
+    } 
+
+    //restituisce la richiesta del client come una stringa
+    public String riceviRichiestaDalClientString(Socket clientSocket) throws IOException
+    {
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
+            String funzioneRichiesta = in.readLine();
+            return funzioneRichiesta;
         }
     } 
 
