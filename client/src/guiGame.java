@@ -31,10 +31,15 @@ public class guiGame extends JFrame
     private JButton passa;
     private JButton alzaPuntata;
 
+    public comunicazione communication;
+
     
 
-    public guiGame() throws IOException 
+    public guiGame(comunicazione communication) throws IOException 
     {
+        //avvio la comunicazione
+        this.communication = communication;
+
         //valore che mi permette di capire quando cambiare pagina e avviare la comunicazione dal main
         isClose = true;
 
@@ -63,7 +68,22 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                isScommesso = true;
+                try 
+                {
+                    if(isPassato == false)
+                    {
+                        communication.output("chiama/null");
+                        isScommesso = true;
+                    }
+                    else
+                    {
+                        inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
+                    }
+                    
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
         });
 
@@ -77,7 +97,24 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                isPassato = true;
+                try 
+                {
+                    if(isScommesso == false)
+                    {
+                        communication.output("passa/null");
+                        isPassato = true;
+                    }
+                    else
+                    {
+                        inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
+                    }
+
+                } 
+                catch (IOException e1) 
+                {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }            
             }
         });
 
@@ -187,8 +224,10 @@ public class guiGame extends JFrame
     {
         if ("Abbandona partita".equals(menuTendina.getSelectedItem()))
         {
-            this.isAbbandonato = true;
             setVisible(false);
+            communication.output("abbandonaPartita");
+            communication.terminateConnection();
+
         } 
     }
 
@@ -204,6 +243,11 @@ public class guiGame extends JFrame
         g2d.dispose();
 
         return resizedImage;
+    }
+
+    private static void inserisciErrore(String message, String title) 
+    {
+        JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
 }

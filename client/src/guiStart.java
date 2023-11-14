@@ -20,6 +20,8 @@ public class guiStart extends JFrame
     private BufferedImage imgGiocatore;
     private BufferedImage imgDealer;
     private BufferedImage imgCasino;
+    public comunicazione communication;
+    public guiGame game;
 
     public guiStart() throws IOException 
     {
@@ -40,12 +42,15 @@ public class guiStart extends JFrame
             @Override
             public void actionPerformed(ActionEvent e) 
             {
-                guiGame game;
-                try {
-                    game = new guiGame();
+                try 
+                {
+                    communication = new comunicazione();
+                    communication.output("ciao sono il client uno");
+                    game = new guiGame(communication);
                     setVisible(false);
                     game.isClose = false;
                     game.setVisible(true);
+                    
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
