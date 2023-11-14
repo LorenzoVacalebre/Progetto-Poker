@@ -20,7 +20,7 @@ public class comunicazione
 
     public comunicazione() throws UnknownHostException, IOException
     {
-        this.serverAddress = "172.16.102.120";
+        this.serverAddress = "192.168.1.72";
         this.serverPort = 666;
         clientSocket = new Socket(this.serverAddress, this.serverPort); 
     }

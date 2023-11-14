@@ -33,7 +33,7 @@ public class guiStart extends JFrame
         pannelloSfondo.setLayout(new GridBagLayout());
 
         //bottone di inizio
-        start = new JButton("Inizia la partita");
+        start = new JButton("Unisciti alla partita");
         start.setPreferredSize(new Dimension(200, 50));
         start.setFont(new Font("Arial", Font.PLAIN, 20));
         this.addComponent(770, 20, 0, 0, start);
@@ -44,12 +44,40 @@ public class guiStart extends JFrame
             {
                 try 
                 {
+                    String messaggioRicevuto = "";
                     communication = new comunicazione();
-                    communication.output("ciao sono il client uno");
-                    game = new guiGame(communication);
-                    setVisible(false);
-                    game.isClose = false;
-                    game.setVisible(true);
+                    communication.output("client1");
+                    messaggioRicevuto = communication.input();
+
+
+                    if(messaggioRicevuto.equals("partitaOnline"))
+                    {
+                        //creo la partita solo se il server mi autorizza
+                        String linea;
+                        String vettore[];
+                        carte lista = new carte();
+                        for(int i = 0; i<2; i++)
+                        {
+                            linea = communication.input();
+                            vettore = linea.split(";");
+                            carta c;
+                            if(vettore[2].equals("true"))
+                                c = new carta(vettore[0], vettore[1], true);
+                            else
+                                c = new carta(vettore[0], vettore[1], false);
+                            lista.addCarta(c);
+                        }
+
+                        game = new guiGame(communication, lista);
+                        setVisible(false);
+                        game.isClose = false;
+                        game.setVisible(true);
+
+                    }
+                    else
+                        communication.output("Errore all'inizio");
+
+                    
                     
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block

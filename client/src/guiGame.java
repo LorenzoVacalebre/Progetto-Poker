@@ -20,6 +20,8 @@ public class guiGame extends JFrame
     private JComboBox<String> menuTendina;
     private BufferedImage imgGiocatore;
     private BufferedImage imgDealer;
+    private BufferedImage imgcarta;
+
     public boolean isClose;
     public int puntata;
 
@@ -32,13 +34,19 @@ public class guiGame extends JFrame
     private JButton alzaPuntata;
 
     public comunicazione communication;
+    private gioco play;
+    private carte carte;
 
-    
-
-    public guiGame(comunicazione communication) throws IOException 
+    public guiGame(comunicazione communication, carte carte) throws IOException 
     {
         //avvio la comunicazione
         this.communication = communication;
+
+        //classe che gestisce il gioco in generale interfacciandosi anche con la comunicazione
+        this.play = new gioco(this);
+
+        //classe che mi permette di partire gestire le carte
+        this.carte = carte;
 
         //valore che mi permette di capire quando cambiare pagina e avviare la comunicazione dal main
         isClose = true;
@@ -68,23 +76,7 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                try 
-                {
-                    if(isPassato == false)
-                    {
-                        System.out.println("sono nell?if");
-                        communication.output("chiama/null");
-                        isScommesso = true;
-                    }
-                    else
-                    {
-                        inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
-                    }
-                    
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+                play.scommetti();
             }
             
         });
@@ -99,24 +91,7 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                try 
-                {
-                    if(isScommesso == false)
-                    {
-                        communication.output("passa/null");
-                        isPassato = true;
-                    }
-                    else
-                    {
-                        inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
-                    }
-
-                } 
-                catch (IOException e1) 
-                {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }            
+                play.passa();         
             }
         });
 
@@ -184,6 +159,36 @@ public class guiGame extends JFrame
         setSize(1500, 900);
         //chiudo la finestra e chiudo anche il "programma"
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //immagine delle carte
+        for(int i= 0; i<this.carte.size(); i++)
+        {
+            if(this.carte.lista.get(i).getIsScoperta() == true)
+            {
+                imgcarta = ImageIO.read(new File("client/immagini/scoperta.png"));
+                imgcarta = resizeImage(imgcarta, 255, 200); 
+                if(i == 1)
+                {
+                    this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+                }
+                else
+                    this.addComponent(0, 200, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+            } 
+            else
+            {
+                imgcarta = ImageIO.read(new File("client/immagini/coperta.png"));
+                imgcarta = resizeImage(imgcarta, 255, 200); 
+                if(i == 1)
+                {
+                    this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+                }
+                else
+                    this.addComponent(0, 200, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+            }
+        }
+        imgcarta = resizeImage(imgcarta, 255, 200); 
+        this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+
         
     }
 
@@ -225,7 +230,7 @@ public class guiGame extends JFrame
         Desktop.getDesktop().browse(new URI(url));
     }
 
-    private void leftGame() throws IOException, URISyntaxException 
+    public void leftGame() throws IOException, URISyntaxException 
     {
         if (menuTendina.getSelectedItem().equals("Abbandona partita"))
         {
@@ -250,7 +255,7 @@ public class guiGame extends JFrame
         return resizedImage;
     }
 
-    private static void inserisciErrore(String message, String title) 
+    public void inserisciErrore(String message, String title) 
     {
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
     }
