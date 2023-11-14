@@ -10,9 +10,9 @@ public class App {
     {
         start = new guiStart();
         game = new guiGame();
-        communication = new comunicazione();
         if(game.isClose == false)
         {
+            communication = new comunicazione();
             communication.output("avvia;1"); //avvio la partita
             scommettiClient();
             passaClient();
