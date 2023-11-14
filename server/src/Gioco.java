@@ -18,7 +18,7 @@ public class Gioco {
     private int posGiocatoreEffRic;
     private String funzioneRichiesta;
     private Socket socketClientTmp;
-    private Comunicazione comunicazioneTmp;
+    private Comunicazione comunicazioneTmp = new Comunicazione(666);
 
     //mazzi utili al gioco
     private Mazzo mazzoDaGioco, mazzoCarteScartate;
@@ -599,7 +599,6 @@ public class Gioco {
 
             //il client accetta la puntata più alta effettuata e punta lo stesso
             case "chiama":
-
                 //trovo puntata più alta e la copio nel giocatore che sta giocando
                 this.copiaPuntata();
                 //invio al client temporaneo l'informazione utile, la nuova punta

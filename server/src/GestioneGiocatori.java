@@ -82,5 +82,15 @@ public class GestioneGiocatori {
     public int size() {
         return this.listaGiocatori.size();
     }
+
+    //metodo per eliminare un giocatore dalla partita
+    public void pullGiocatore(Socket client)
+    {
+        for(int i = 0; i < this.listaGiocatori.size(); i++)
+        {
+            if(client.getInetAddress().equals(this.listaGiocatori.get(i).getSocket().getInetAddress()))
+                this.listaGiocatori.remove(i);
+        }
+    }
 }
 
