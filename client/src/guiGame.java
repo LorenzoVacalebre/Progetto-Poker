@@ -72,6 +72,7 @@ public class guiGame extends JFrame
                 {
                     if(isPassato == false)
                     {
+                        System.out.println("sono nell?if");
                         communication.output("chiama/null");
                         isScommesso = true;
                     }
@@ -85,6 +86,7 @@ public class guiGame extends JFrame
                     e1.printStackTrace();
                 }
             }
+            
         });
 
         //bottone passa
@@ -131,9 +133,12 @@ public class guiGame extends JFrame
                 if(puntata == PUNTATA_MASSIMA)
                 {
                     puntata = 0;
+                    System.out.println(puntata);
+
                 }
                 else
                     puntata += 100;
+                    System.out.println(puntata);
                 
             }
         });
@@ -222,7 +227,7 @@ public class guiGame extends JFrame
 
     private void leftGame() throws IOException, URISyntaxException 
     {
-        if ("Abbandona partita".equals(menuTendina.getSelectedItem()))
+        if (menuTendina.getSelectedItem().equals("Abbandona partita"))
         {
             setVisible(false);
             communication.output("abbandonaPartita");

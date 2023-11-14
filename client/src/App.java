@@ -1,6 +1,5 @@
 
-public class App 
-{
+public class App {
     // Dichiarazione come membri di classe per rendere globali
     private static guiStart start;
     private static guiGame game;

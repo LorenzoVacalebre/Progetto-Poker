@@ -74,17 +74,10 @@ public class Comunicazione {
         //inizializzazione socket con il client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
 
+        //log gioco
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String funzioneRichiesta = in.readLine();
         System.out.println(funzioneRichiesta);
-        
-
-        //controllo se un client prova a collegarsi su una socket già presente 
-        //(non dovrebbe poter succedere, controllo per maggiore sicurezza)
-        if(this.listaGiocatori.controllaDuplicati(clientSocket) == true) {
-            this.chiudiConnessione(clientSocket);
-            return;
-        }
         
         //se cè un giocatore connesso, dire agli altri di unirsi alla partita
         if(this.unGiocatoreConnesso == true)
@@ -100,7 +93,7 @@ public class Comunicazione {
         this.listaGiocatori.aggiungiGiocatore(g);
 
         //metodo per chiudere la connessione
-        this.chiudiConnessione(clientSocket);
+        // clientSocket.close();
     
         //incremento numero di client connessi al server
         this.numeroDiClientConnessi++;
@@ -115,19 +108,24 @@ public class Comunicazione {
     private void leggiRichiesteDeiClient() throws IOException {
 
         //inzializzazione socket con client utile alla gestione del flusso dei dati
-        Socket clientSocket = this.serverSocket.accept();
+        Socket s1 = this.listaGiocatori.getGiocatore(0).getSocket();
+
+        //log gioco
+        BufferedReader in = new BufferedReader(new InputStreamReader(s1.getInputStream()));
+        String funzioneRichiesta = in.readLine();
+        System.out.println(funzioneRichiesta);
 
         //controllo se il giocatore desidera abbandonare la partita
-        this.controlloAbbandonaPartita(clientSocket);
+        this.controlloAbbandonaPartita(s1);
 
         //salvataggio client che effettua richiesta
-        int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneClient(clientSocket);
+        int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneClient(s1);
 
         //se il giocatore è ancora presente nel round
         if(this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).getStatusPresenza() == true)
         {
             this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
-            this.gioco.setSocketClientTmp(clientSocket);
+            this.gioco.setSocketClientTmp(s1);
 
             //è il turno del giocatore 
             this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(true);
@@ -140,7 +138,7 @@ public class Comunicazione {
                 this.gioco.trovaGiocatoreEInserisciCartaInMano();
 
                 //se il client che ha effettuato la connessione è il terzo controllo se il round è già attivo
-                if(this.listaGiocatori.trovaPosizioneClient(clientSocket) == 2) {
+                if(this.listaGiocatori.trovaPosizioneClient(s1) == 2) {
                     //round a true
                     this.gioco.setStatusRoundTrue();
                     //non è il turno del giocatore 
@@ -155,12 +153,12 @@ public class Comunicazione {
             {
                 //salvataggio richiesta di uno dei client nel gioco
                 //Allegamento puntata (punta/*numero*)
-                this.riceviRichiestaDalClient(clientSocket);
+                this.riceviRichiestaDalClient(s1);
                 switch(this.nFase)
                 {
                     case 2:
                         //esegui la mano
-                        this.eseguiTurno(clientSocket,posClientCheEffettuaRichiesta);
+                        this.eseguiTurno(s1,posClientCheEffettuaRichiesta);
                         break;
                     case 3: 
                         //aggiungo carta al flop
@@ -173,7 +171,7 @@ public class Comunicazione {
                         break;
                     case 4:
                         //esegui la mano
-                        this.eseguiTurno(clientSocket,posClientCheEffettuaRichiesta);
+                        this.eseguiTurno(s1,posClientCheEffettuaRichiesta);
                         break;
                     case 5:
                         //aggiungo carta al flop
@@ -185,7 +183,7 @@ public class Comunicazione {
                         break;
                     case 6:
                         //esegui la mano
-                        this.eseguiTurno(clientSocket,posClientCheEffettuaRichiesta);
+                        this.eseguiTurno(s1,posClientCheEffettuaRichiesta);
                         break;
                     case 7:
                         //aggiungo carta al flop
@@ -197,7 +195,7 @@ public class Comunicazione {
                         break;
                     case 8:
                         //esegui la mano
-                        this.eseguiTurno(clientSocket,posClientCheEffettuaRichiesta);
+                        this.eseguiTurno(s1,posClientCheEffettuaRichiesta);
                         break;
                     case 9:
                         //visualizzazione tutte le carte
@@ -220,12 +218,8 @@ public class Comunicazione {
     }
 
     //metodo utile alla chiusura di una connessione 
-    private void chiudiConnessione(Socket socket) {
-        try {
-            socket.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void chiudiConnessione(Socket socket) throws IOException {
+        socket.close();
     }
 
     //metodo per controllare se un client ha richiesto di abbandonare la partita 
@@ -257,6 +251,7 @@ public class Comunicazione {
     {
         try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
             String funzioneRichiesta = in.readLine();
+            in.close();
             return funzioneRichiesta;
         }
     } 
@@ -265,7 +260,7 @@ public class Comunicazione {
     {
         OutputStream outputStream = clientSocket.getOutputStream();
         outputStream.write(messaggio.getBytes());
-    } 
+    }
 
     //metodo per inviare le informazioni a ogni client
     private void inviaInfoATutti() throws IOException
