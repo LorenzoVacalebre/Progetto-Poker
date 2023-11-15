@@ -2,16 +2,48 @@ import java.io.IOException;
 
 public class gioco 
 {
-    public guiGame game; 
+    public guiGame game;
+    private boolean isYourTurn; 
 
     public gioco(guiGame game)
     {
         this.game = game;
+        isYourTurn = false;
     }
 
-    public void mostraCarteIniziali()
+    //metodo che ritorna le carte iniziali 
+    public carte mostraCarteIniziali()
     {
-        
+        try 
+        {
+            //creo la partita solo se il server mi autorizza
+            String linea;
+            String vettore[];
+            carte lista = new carte();
+
+            for(int i = 0; i < 2; i++)
+            {
+                linea = game.communication.input();
+                System.out.println(linea);
+                vettore = linea.split(";");
+                carta c;
+
+                if(vettore[2].equals("true"))
+                    c = new carta(vettore[0], vettore[1], true);
+                else
+                    c = new carta(vettore[0], vettore[1], false);
+                
+                lista.addCarta(c);
+            } 
+
+            return lista;
+
+            
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        return null;
     }
 
     //metodo che mi permette di scommettere
@@ -23,7 +55,6 @@ public class gioco
             //se ho gia passato non permetto di scommetere in quanto si è gia passato il turno
             if(game.isPassato == false)
             {
-                System.out.println("sono nell?if");
                 game.communication.output("chiama/null");
                 game.isScommesso = true;
                 messaggioRicevuto = game.communication.input();

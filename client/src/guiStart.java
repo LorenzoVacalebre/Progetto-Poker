@@ -19,6 +19,7 @@ public class guiStart extends JFrame
     private BufferedImage imgCasino;
     public comunicazione communication;
     public guiGame game;
+    public gioco partita;
 
     public guiStart() throws IOException 
     {
@@ -41,36 +42,21 @@ public class guiStart extends JFrame
             {
                 try 
                 {
+                    //comunico al server che voglio giocare
                     communication = new comunicazione();
-                    communication.output("client1");
+                    communication.output("client");
                     communication.output("...");
 
-                    //creo la partita solo se il server mi autorizza
-                    String linea;
-                    String vettore[];
-                    carte lista = new carte();
-
-                    for(int i = 0; i < 2; i++)
-                    {
-                        linea = communication.input();
-                        System.out.println(linea);
-                        vettore = linea.split(";");
-                        carta c;
-
-                        if(vettore[2].equals("true"))
-                            c = new carta(vettore[0], vettore[1], true);
-                        else
-                            c = new carta(vettore[0], vettore[1], false);
-                        
-                        lista.addCarta(c);
-                    }
-
+                    //setto le due carte iniziali 
+                    carte lista = partita.mostraCarteIniziali();
+                    //le invio alla schermata di gioco
                     game = new guiGame(communication, lista);
+
+                    //chiudo questa schermata 
                     setVisible(false);
+                    //apro la guigame
                     game.isClose = false;
                     game.setVisible(true);
-
-                    
                     
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
