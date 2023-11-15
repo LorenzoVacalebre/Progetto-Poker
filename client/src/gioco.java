@@ -2,52 +2,16 @@ import java.io.IOException;
 
 public class gioco 
 {
-    public guiGame game;
-    private boolean isYourTurn; 
-    public carte lista = new carte();
-
+    public guiGame game; 
 
     public gioco(guiGame game)
     {
         this.game = game;
-        isYourTurn = false;
-        lista = new carte();
     }
 
-    //metodo che ritorna le carte iniziali 
-    public void riceviCarteIniziali()
+    public void mostraCarteIniziali()
     {
-        try 
-        {
-            //creo la partita solo se il server mi autorizza
-            String linea;
-            String vettore[];
-
-            for(int i = 0; i < 2; i++)
-            {
-                linea = game.communication.input();
-                System.out.println(linea);
-                vettore = linea.split(";");
-                carta c;
-
-                if(vettore[2].equals("true"))
-                    c = new carta(vettore[0], vettore[1], true);
-                else
-                    c = new carta(vettore[0], vettore[1], false);
-                
-                lista.addCarta(c);
-            } 
-
-            
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-    }
-
-    public carte mostraCarteIniziali()
-    {
-        return this.lista;
+        
     }
 
     //metodo che mi permette di scommettere

@@ -7,6 +7,8 @@ import java.io.*;
 import java.net.*;
 
 public class Comunicazione {
+    static int NUMERO_GIOCATORI = 1;
+
     //socket del server
     private ServerSocket serverSocket;
 
@@ -52,7 +54,7 @@ public class Comunicazione {
             //mantenimento server in ascolto
             while (true) {
                 //accetta connessione da client diversi fino a quando questi diventano 3
-                if (this.numeroDiClientConnessi < 2) {
+                if (this.numeroDiClientConnessi < NUMERO_GIOCATORI) {
                     this.gestisciConnessioneSingoloClient();//metodo gestione singole connessioni iniziali
                 } else {
                     if(this.gioco.getStatus() == false) {
@@ -74,14 +76,15 @@ public class Comunicazione {
         //inizializzazione socket con il client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
 
-        //controllo/cambio turno giocatore
-        if(this.turnoGiocatore == 0)
-            this.turnoGiocatore = 1;
-        else if(this.turnoGiocatore == 1)
-            this.turnoGiocatore = 2;
-        else if(this.turnoGiocatore == 2)
-            this.turnoGiocatore = 1;
-        
+        if(NUMERO_GIOCATORI > 1) {
+            //controllo/cambio turno giocatore
+            if(this.turnoGiocatore == 0)
+                this.turnoGiocatore = 1;
+            else if(this.turnoGiocatore == 1)
+                this.turnoGiocatore = 2;
+            else if(this.turnoGiocatore == 2)
+                this.turnoGiocatore = 1;
+        }
         /* 
         else if(this.turnoGiocatore == 3)
             this.turnoGiocatore = 1;
@@ -105,7 +108,7 @@ public class Comunicazione {
         this.numeroDiClientConnessi++;
         
         //inserimento lista completa dei 3 giocatori all'interno del gioco
-        if(numeroDiClientConnessi == 2){
+        if(numeroDiClientConnessi == NUMERO_GIOCATORI){
             this.gioco = new Gioco(listaGiocatori);//inizio nuovo gioco
         }
     }
@@ -116,6 +119,7 @@ public class Comunicazione {
         //definizio socket utile alla trasmissione di dati con i vari giocatori della partita
         Socket s = new Socket();
 
+        if(NUMERO_GIOCATORI > 1) {
         if(this.turnoGiocatore == 1)
             this.turnoGiocatore = 2;
         else if(this.turnoGiocatore == 2)
@@ -126,6 +130,9 @@ public class Comunicazione {
             s = this.listaGiocatori.getGiocatore(0).getSocket();
         if(this.turnoGiocatore == 2)
             s = this.listaGiocatori.getGiocatore(1).getSocket();
+
+        }else
+            s = this.listaGiocatori.getGiocatore(0).getSocket();
 
         //controllo se il giocatore desidera abbandonare la partita
         //this.controlloAbbandonaPartita(s);
@@ -152,7 +159,7 @@ public class Comunicazione {
                 this.gioco.trovaGiocatoreEInserisciCartaInMano();
 
                 //se il client che ha effettuato la connessione è il terzo controllo se il round è già attivo
-                if(this.listaGiocatori.trovaPosizioneClient(s) == 1) {
+                if(this.listaGiocatori.trovaPosizioneClient(s) == NUMERO_GIOCATORI - 1) {
                     //round a true
                     this.gioco.setStatusRoundTrue();
                     //non è il turno del giocatore 
@@ -299,7 +306,7 @@ public class Comunicazione {
     //metodo per eseguire un turno
     private void eseguiTurno(Socket clientSocket, int posClientCheEffettuaRichiesta) throws IOException
     {
-        if((this.listaGiocatori.trovaPosizioneClient(clientSocket) != 1))
+        if((this.listaGiocatori.trovaPosizioneClient(clientSocket) != NUMERO_GIOCATORI - 1))
         {
             //se il gioco è attivo
             if(this.gioco.getStatus() == true)

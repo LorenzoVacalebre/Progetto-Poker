@@ -16,10 +16,10 @@ public class guiStart extends JFrame
     private JPanel pannelloSfondo;
     private GridBagConstraints contenitore;
     private JButton start;
+    private JComboBox<String> menuTendina;
     private BufferedImage imgCasino;
     public comunicazione communication;
     public guiGame game;
-    public gioco partita;
 
     public guiStart() throws IOException 
     {
@@ -42,16 +42,36 @@ public class guiStart extends JFrame
             {
                 try 
                 {
-                    //comunico al server che voglio giocare
                     communication = new comunicazione();
-                    communication.output("client");
+                    communication.output("client1");
                     communication.output("...");
-                    game = new guiGame(communication);
-                    partita = new gioco(game);
-                    partita.riceviCarteIniziali();
+
+                    //creo la partita solo se il server mi autorizza
+                    String linea;
+                    String vettore[];
+                    carte lista = new carte();
+
+                    for(int i = 0; i < 2; i++)
+                    {
+                        linea = communication.input();
+                        System.out.println(linea);
+                        vettore = linea.split(";");
+                        carta c;
+
+                        if(vettore[2].equals("true"))
+                            c = new carta(vettore[0], vettore[1], true);
+                        else
+                            c = new carta(vettore[0], vettore[1], false);
+                        
+                        lista.addCarta(c);
+                    }
+
+                    game = new guiGame(communication, lista);
                     setVisible(false);
                     game.isClose = false;
                     game.setVisible(true);
+
+                    
                     
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
@@ -59,7 +79,7 @@ public class guiStart extends JFrame
                 }
             }
         });
-        
+
         //immagine del casino
         imgCasino = ImageIO.read(new File("client/immagini/scrittaPoker.png"));
         imgCasino = resizeImage(imgCasino, 600, 300); 
@@ -101,6 +121,17 @@ public class guiStart extends JFrame
     {
         if (immagineSfondo != null)
             g.drawImage(immagineSfondo, 0, 0, getWidth(), getHeight(), this);
+    }
+
+    private void actionRules() throws IOException, URISyntaxException 
+    {
+        if ("Regolamento".equals(menuTendina.getSelectedItem())) 
+            exploreUrl("https://poker.md/it/how-to-play-poker/");
+    }
+
+    private void exploreUrl(String url) throws IOException, URISyntaxException 
+    {
+        Desktop.getDesktop().browse(new URI(url));
     }
 
     //metodo che ridimensiona un'immagine

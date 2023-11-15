@@ -34,19 +34,19 @@ public class guiGame extends JFrame
     private JButton alzaPuntata;
 
     public comunicazione communication;
-    private gioco partita;
+    private gioco play;
     private carte carte;
 
-    public guiGame(comunicazione communication) throws IOException 
+    public guiGame(comunicazione communication, carte carte) throws IOException 
     {
         //avvio la comunicazione
         this.communication = communication;
 
         //classe che gestisce il gioco in generale interfacciandosi anche con la comunicazione
-        this.partita = new gioco(this);
+        this.play = new gioco(this);
 
         //classe che mi permette di partire gestire le carte
-        this.carte = partita.mostraCarteIniziali();
+        this.carte = carte;
 
         //valore che mi permette di capire quando cambiare pagina e avviare la comunicazione dal main
         isClose = true;
@@ -76,7 +76,7 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                partita.scommetti();
+                play.scommetti();
             }
             
         });
@@ -91,7 +91,7 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                partita.passa();         
+                play.passa();         
             }
         });
 
@@ -161,8 +161,7 @@ public class guiGame extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //immagine delle carte
-        this.mettiCarteIniziali
-();
+        this.mostraCarteIniziali();
         
     }
 
@@ -196,7 +195,7 @@ public class guiGame extends JFrame
     private void actionRules() throws IOException, URISyntaxException 
     {
         if ("Regolamento".equals(menuTendina.getSelectedItem())) 
-            exploreUrl("https://poker.md/it/how-to-partita-poker/");
+            exploreUrl("https://poker.md/it/how-to-play-poker/");
     }
 
     private void exploreUrl(String url) throws IOException, URISyntaxException 
@@ -233,17 +232,15 @@ public class guiGame extends JFrame
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    public void mettiCarteIniziali() throws IOException
+    public void mostraCarteIniziali() throws IOException
     {
 
         for(int i= 0; i<this.carte.size(); i++)
         {
-            imgcarta = resizeImage(imgcarta, 100, 150); 
-            String percorsoCarta;
             if(this.carte.lista.get(i).getIsScoperta() == true)
             {
-                percorsoCarta = carte.lista.get(i).getNumero() + carte.lista.get(i).getSeme();
-                imgcarta = ImageIO.read( new File(percorsoCarta + ".png"));
+                imgcarta = ImageIO.read(new File("client/immagini/scoperta.png"));
+                imgcarta = resizeImage(imgcarta, 255, 200); 
                 if(i == 1)
                 {
                     this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
@@ -253,8 +250,8 @@ public class guiGame extends JFrame
             } 
             else
             {
-                percorsoCarta = carte.lista.get(i).getNumero() + carte.lista.get(i).getSeme();
-                imgcarta = ImageIO.read( new File(percorsoCarta + ".png"));                
+                imgcarta = ImageIO.read(new File("client/immagini/coperta.png"));
+                imgcarta = resizeImage(imgcarta, 255, 200); 
                 if(i == 1)
                 {
                     this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
