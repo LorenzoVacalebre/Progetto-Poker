@@ -16,9 +16,6 @@ public class guiStart extends JFrame
     private JPanel pannelloSfondo;
     private GridBagConstraints contenitore;
     private JButton start;
-    private JComboBox<String> menuTendina;
-    private BufferedImage imgGiocatore;
-    private BufferedImage imgDealer;
     private BufferedImage imgCasino;
     public comunicazione communication;
     public guiGame game;
@@ -27,7 +24,7 @@ public class guiStart extends JFrame
     {
         
         //sfondo
-        immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
+        immagineSfondo = ImageIO.read(new File("client/immagini/sfondoStart.jpg"));
         pannelloSfondo = creaPannelloConSfondo();
         contenitore = new GridBagConstraints();
         pannelloSfondo.setLayout(new GridBagLayout());
@@ -81,42 +78,7 @@ public class guiStart extends JFrame
                 }
             }
         });
-
-        //menu a tendina
-        String[] opzioniMenu = {"Menù Funzionalità", "Regolamento"};
-        menuTendina = new JComboBox<>(opzioniMenu);
-        menuTendina.setPreferredSize(new Dimension(200, 40));
-        menuTendina.setFont(new Font("Arial", Font.PLAIN, 17));
-        this.addComponent(0, 1200, 700, 0, menuTendina);
-
-            //regolamento
-            menuTendina.addActionListener(new ActionListener()
-            //anonymous inner class: serve per creare una classe "leggera" o allungare una classe gia esistente
-            {
-                @Override
-                public void actionPerformed(ActionEvent e) 
-                {
-                    try {
-                        actionRules();
-                    } catch (IOException | URISyntaxException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
         
-
-        //immagini dei giocatori
-        imgGiocatore = ImageIO.read(new File("client/immagini/imgGiocatore.png"));
-        imgGiocatore = resizeImage(imgGiocatore, 70, 70); 
-        this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
-        this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
-        this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
-
-        //immagine del dealer
-        imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
-        imgDealer = resizeImage(imgDealer, 320, 200); 
-        this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
-
         //immagine del casino
         imgCasino = ImageIO.read(new File("client/immagini/scrittaPoker.png"));
         imgCasino = resizeImage(imgCasino, 600, 300); 
@@ -158,17 +120,6 @@ public class guiStart extends JFrame
     {
         if (immagineSfondo != null)
             g.drawImage(immagineSfondo, 0, 0, getWidth(), getHeight(), this);
-    }
-
-    private void actionRules() throws IOException, URISyntaxException 
-    {
-        if ("Regolamento".equals(menuTendina.getSelectedItem())) 
-            exploreUrl("https://poker.md/it/how-to-play-poker/");
-    }
-
-    private void exploreUrl(String url) throws IOException, URISyntaxException 
-    {
-        Desktop.getDesktop().browse(new URI(url));
     }
 
     //metodo che ridimensiona un'immagine
