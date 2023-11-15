@@ -4,8 +4,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -16,7 +14,6 @@ public class guiStart extends JFrame
     private JPanel pannelloSfondo;
     private GridBagConstraints contenitore;
     private JButton start;
-    private JComboBox<String> menuTendina;
     private BufferedImage imgCasino;
     public comunicazione communication;
     public guiGame game;
@@ -121,17 +118,6 @@ public class guiStart extends JFrame
     {
         if (immagineSfondo != null)
             g.drawImage(immagineSfondo, 0, 0, getWidth(), getHeight(), this);
-    }
-
-    private void actionRules() throws IOException, URISyntaxException 
-    {
-        if ("Regolamento".equals(menuTendina.getSelectedItem())) 
-            exploreUrl("https://poker.md/it/how-to-play-poker/");
-    }
-
-    private void exploreUrl(String url) throws IOException, URISyntaxException 
-    {
-        Desktop.getDesktop().browse(new URI(url));
     }
 
     //metodo che ridimensiona un'immagine

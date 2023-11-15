@@ -234,31 +234,18 @@ public class guiGame extends JFrame
 
     public void mostraCarteIniziali() throws IOException
     {
-
+        String percorsoCarta = "";
         for(int i= 0; i<this.carte.size(); i++)
         {
-            if(this.carte.lista.get(i).getIsScoperta() == true)
+            percorsoCarta = carte.lista.get(i).getNumero() + carte.lista.get(i).getSeme() + ".png";
+            imgcarta = ImageIO.read(new File("client/immagini/carte/" + percorsoCarta));
+            imgcarta = resizeImage(imgcarta, 80, 100); 
+            if(i == 1)
             {
-                imgcarta = ImageIO.read(new File("client/immagini/scoperta.png"));
-                imgcarta = resizeImage(imgcarta, 255, 200); 
-                if(i == 1)
-                {
-                    this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-                }
-                else
-                    this.addComponent(0, 200, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-            } 
-            else
-            {
-                imgcarta = ImageIO.read(new File("client/immagini/coperta.png"));
-                imgcarta = resizeImage(imgcarta, 255, 200); 
-                if(i == 1)
-                {
-                    this.addComponent(0, 0, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-                }
-                else
-                    this.addComponent(0, 200, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+                this.addComponent(250, 0, 0, 100, new JLabel(new ImageIcon(imgcarta)));
             }
+            else
+                this.addComponent(250, 100, 0, 0, new JLabel(new ImageIcon(imgcarta)));
         }
     }
 

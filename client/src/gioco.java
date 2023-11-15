@@ -9,11 +9,6 @@ public class gioco
         this.game = game;
     }
 
-    public void mostraCarteIniziali()
-    {
-        
-    }
-
     //metodo che mi permette di scommettere
     public void scommetti()
     {
