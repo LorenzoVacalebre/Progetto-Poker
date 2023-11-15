@@ -46,15 +46,10 @@ public class guiStart extends JFrame
                     communication = new comunicazione();
                     communication.output("client");
                     communication.output("...");
-
-                    //setto le due carte iniziali 
-                    carte lista = partita.mostraCarteIniziali();
-                    //le invio alla schermata di gioco
-                    game = new guiGame(communication, lista);
-
-                    //chiudo questa schermata 
+                    game = new guiGame(communication);
+                    partita = new gioco(game);
+                    partita.riceviCarteIniziali();
                     setVisible(false);
-                    //apro la guigame
                     game.isClose = false;
                     game.setVisible(true);
                     

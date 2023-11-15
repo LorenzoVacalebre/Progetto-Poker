@@ -4,22 +4,24 @@ public class gioco
 {
     public guiGame game;
     private boolean isYourTurn; 
+    public carte lista = new carte();
+
 
     public gioco(guiGame game)
     {
         this.game = game;
         isYourTurn = false;
+        lista = new carte();
     }
 
     //metodo che ritorna le carte iniziali 
-    public carte mostraCarteIniziali()
+    public void riceviCarteIniziali()
     {
         try 
         {
             //creo la partita solo se il server mi autorizza
             String linea;
             String vettore[];
-            carte lista = new carte();
 
             for(int i = 0; i < 2; i++)
             {
@@ -36,14 +38,16 @@ public class gioco
                 lista.addCarta(c);
             } 
 
-            return lista;
-
             
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
-        return null;
+    }
+
+    public carte mostraCarteIniziali()
+    {
+        return this.lista;
     }
 
     //metodo che mi permette di scommettere
