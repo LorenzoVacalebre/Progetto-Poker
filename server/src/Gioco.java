@@ -104,14 +104,38 @@ public class Gioco {
     }
 
     //metodo utile a ricavare il giocatore a cui bisogna distribuire la carta
-    public void trovaGiocatoreEInserisciCartaInMano() throws IOException
-    {
-        this.listaGiocatori.ottieniGiocatore(this.socketClientTmp).getManoGiocatore().push(this.distribuisciCarta());
-        int posCartaInserita = this.listaGiocatori.ottieniGiocatore(this.socketClientTmp).getManoGiocatore().size() - 1;
-        Carta tmp = this.listaGiocatori.ottieniGiocatore(this.socketClientTmp).getManoGiocatore().get(posCartaInserita);
+    public void trovaGiocatoreEInserisciCartaInMano() throws IOException {
+        //se la socket è inattiva non faccio niente
+        if (this.socketClientTmp == null) {
+            return;
+        }
+    
+        //creo un nuovo giocatore tmp
+        Giocatore giocatore = this.listaGiocatori.ottieniGiocatore(this.socketClientTmp);
+    
+        //se non viene trovato alcun giocatore non faccio niente
+        if (giocatore == null) {
+            return;
+        }
+    
+        //estraggo una carta dal mazzo
+        Carta cartaDistribuita = this.distribuisciCarta();
 
-        //invio al client temporaneo l'informazione utile
-        this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, tmp.getNumero() + ";" + tmp.getSeme() + ";" + tmp.getIsFacedUp());
+        //do la carta al giocatore
+        giocatore.getManoGiocatore().push(cartaDistribuita);
+    
+        //salvo la posizione della carta inserita nella mano del giocatore
+        int posCartaInserita = giocatore.getManoGiocatore().size() - 1;
+
+        //riprendo la carta inserita
+        Carta tmp = giocatore.getManoGiocatore().get(posCartaInserita);
+    
+        //se è presente una comunicazione
+        if (this.comunicazioneTmp != null) {
+            //invio le informazioni corrette al client(carte)
+            this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp,
+                    tmp.getNumero() + ";" + tmp.getSeme() + ";" + tmp.getIsFacedUp());
+        }
     }
 
     //metodo utile a restituire lo stato del round
@@ -125,43 +149,6 @@ public class Gioco {
     {
         for(int i = 0; i < this.listaGiocatori.size(); i++)
             this.listaGiocatori.getGiocatore(i).getManoGiocatore().svuotaMano(this.mazzoCarteScartate);
-    }
-
-    //metodo per copiare la puntata più alta e inserirla nel client che ha effettuato la richiesta
-    private void copiaPuntata() {
-        //valori impossibili
-        float puntataMassima = -1; 
-        int indiceGiocatoreMaxPuntata = -1;
-    
-        //scorro tutta la lista dei giocatori per trovare la puntata più alta
-        for (int i = 0; i < this.listaGiocatori.size(); i++) {
-            //se il giocatore attuale è diverso da quello che ha chiesto la chiamata
-            if (this.posGiocatoreEffRic != i) {
-                //mi salvo la puntata attuale del giocatore i
-                float puntataGiocatoreCorrente = this.listaGiocatori.getGiocatore(i).getPuntata();
-                //se la puntata del giocatore i è superiore a quella massima (più alta)
-                if (puntataGiocatoreCorrente > puntataMassima) {
-                    //salvo sia la puntata che l'indice del giocaore che l'ha effettuata
-                    puntataMassima = puntataGiocatoreCorrente;
-                    indiceGiocatoreMaxPuntata = i;
-                }
-            }
-        }
-    
-        //se è stata trovata almeno un'altra puntata
-        if (indiceGiocatoreMaxPuntata != -1) {
-            //prendo la puntata utile
-            float puntataDaCopiare = this.listaGiocatori.getGiocatore(indiceGiocatoreMaxPuntata).getPuntata();
-            //la copio nella puntata del giocatore che ha effettuato la richiesta
-            this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).addPuntata(puntataDaCopiare);
-        }
-    }
-
-    //metodo per alzare la puntata
-    public void aumentaPuntata(String puntataDaAggiungere)
-    {
-        //sommo alla puntata del giocatore quella nuova
-        this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).addPuntata2(puntataDaAggiungere);
     }
     
     //metodo per trasformare il flop in string e mandarlo ai client
@@ -598,31 +585,27 @@ public class Gioco {
                 break;
 
             //il client accetta la puntata più alta effettuata e punta lo stesso
-            case "chiama":
-                //trovo puntata più alta e la copio nel giocatore che sta giocando
-                this.copiaPuntata();
-                //invio al client temporaneo l'informazione utile, la nuova punta
-                this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, "puntata/" + 
-                    this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getPuntata());
+            case "scommetti":
+
+                //inserisco la prima puntata del giocatore
+                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).addPuntata(Float.parseFloat(tmp[1]));
                 
                 //aggiunta scommessa giocatore al piatto
                 this.scommessaTotale += this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getPuntata();
 
+                //System.out.println(tmp[1]);
+
                 break;
             case "alzaPuntata":
 
-                //trovo puntata più alta e la copio nel giocatore che sta giocando
-                this.copiaPuntata();
-
-                //alzamento puntata
-                this.aumentaPuntata(tmp[1]);
+                //sommo la nuova cifra aumentata alla scommessa già effettuata in precedenza
+                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).addPuntata(Float.parseFloat(tmp[1]));
 
                 //aggiunta scommessa giocatore al piatto
-                this.scommessaTotale += this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getPuntata();
+                this.scommessaTotale += Float.parseFloat(tmp[1]);
 
-                //invio al client temporaneo l'informazione utile, in questo caso viene svuotata la sua mano
-                this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, "puntata/" + 
-                    this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getPuntata());
+                break;
+            case "conferma":
 
                 break;
             default:

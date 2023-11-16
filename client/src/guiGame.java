@@ -36,6 +36,7 @@ public class guiGame extends JFrame
     public comunicazione communication;
     private gioco play;
     private carte carte;
+    private carte flop;
 
     public guiGame(comunicazione communication, carte carte) throws IOException 
     {
@@ -59,7 +60,10 @@ public class guiGame extends JFrame
 
         //valore che poi invio al client relativo alla puntata
         puntata = 0;
+
+        flop = new carte();
         
+
         //sfondo
         immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
         pannelloSfondo = creaPannelloConSfondo();
@@ -76,9 +80,13 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                play.scommetti();
+                try {
+                    play.scommetti();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
-            
         });
 
         //bottone passa
@@ -96,25 +104,21 @@ public class guiGame extends JFrame
         });
 
         //bottone alza la puntata
-        alzaPuntata = new JButton("Alza la puntata");
+        alzaPuntata = new JButton("Avanti");
         alzaPuntata.setPreferredSize(new Dimension(200, 50));
         alzaPuntata.setFont(new Font("Arial", Font.PLAIN, 20));
         this.addComponent(600, 1200, 0, 0, alzaPuntata);
         alzaPuntata.addActionListener(new ActionListener() 
         {
-            @Override
+           @Override
             public void actionPerformed(ActionEvent e)  
             {
-                if(puntata == PUNTATA_MASSIMA)
-                {
-                    puntata = 0;
-                    System.out.println(puntata);
-
+                try {
+                    play.avanti();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
                 }
-                else
-                    puntata += 100;
-                    System.out.println(puntata);
-                
             }
         });
         
@@ -150,7 +154,7 @@ public class guiGame extends JFrame
 
         //immagine del dealer
         imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
-        imgDealer = resizeImage(imgDealer, 320, 200); 
+        imgDealer = resizeImage(imgDealer, 289, 200); 
         this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
 
         //impostazioni di default
@@ -232,22 +236,68 @@ public class guiGame extends JFrame
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
+    //metodo per visualizzare nel modo corretto la mano del giocatore
     public void mostraCarteIniziali() throws IOException
     {
+        //percorso file della carta
         String percorsoCarta = "";
+
+        //scorro la mano
         for(int i= 0; i<this.carte.size(); i++)
         {
+            //salvo il percorso file per ottenere l'immagine corretta 
             percorsoCarta = carte.lista.get(i).getNumero() + carte.lista.get(i).getSeme() + ".png";
+
+            //trovo l'immagine dalla giusta cartella
             imgcarta = ImageIO.read(new File("client/immagini/carte/" + percorsoCarta));
-            imgcarta = resizeImage(imgcarta, 80, 100); 
+
+            //imposto la corretta dimensione
+            imgcarta = resizeImage(imgcarta, 80, 100);
+            
+            //inserimento nel modo corretto delle carte nelle apposite label
             if(i == 1)
-            {
                 this.addComponent(250, 0, 0, 100, new JLabel(new ImageIcon(imgcarta)));
-            }
             else
                 this.addComponent(250, 100, 0, 0, new JLabel(new ImageIcon(imgcarta)));
         }
     }
 
+    public void mostraFlop() throws IOException
+    {
+        String linea = this.communication.input();
+        String[] vett = linea.split("/");
+
+        for (int i = 1; i <= 3; i++) {
+            String[] vettCarte = vett[i].split(";");
+
+            carta c = new carta(vettCarte[0], vettCarte[1], true);
+            this.flop.addCarta(c);
+        }
+
+        String percorsoCarta = "client/immagini/carte/";
+
+        for (int i = 0; i < this.flop.size(); i++) {
+            carta currentCarta = this.flop.lista.get(i);
+
+            String percorsoCompleto = percorsoCarta + currentCarta.getNumero() + currentCarta.getSeme() + ".png";
+
+            try {
+                BufferedImage imgCarta = ImageIO.read(new File(percorsoCompleto));
+
+                imgCarta = resizeImage(imgCarta, 80, 100);
+
+                JLabel labelCarta = new JLabel(new ImageIcon(imgCarta));
+                if (i == 1)
+                    this.addComponent(0, 0, 0, 200, labelCarta);
+                else if (i == 2)
+                    this.addComponent(0, 0, 0, 0, labelCarta);
+                else
+                    this.addComponent(0, 200, 0, 0, labelCarta);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 

@@ -10,27 +10,18 @@ public class gioco
     }
 
     //metodo che mi permette di scommettere
-    public void scommetti()
-    {
-        String messaggioRicevuto = "";
-        try 
+    public void scommetti() throws IOException
+{
+        //se ho gia passato non permetto di scommetere in quanto si è gia passato il turno
+        if(game.isPassato == false)
         {
-            //se ho gia passato non permetto di scommetere in quanto si è gia passato il turno
-            if(game.isPassato == false)
-            {
-                game.communication.output("chiama/null");
-                game.isScommesso = true;
-                messaggioRicevuto = game.communication.input();
-                System.out.println(messaggioRicevuto);
-            }
-            else
-            {
-                game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
-            }
-            
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            game.communication.output("scommetti/10");
+            game.isScommesso = true;
+
+        }
+        else
+        {
+            game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
         }
     }
 
@@ -38,8 +29,6 @@ public class gioco
     //metodo che mi permette di passare 
     public void passa()
     {
-        try 
-        {
             //se ho passato non posso scommettere
             if(game.isScommesso == false)
             {
@@ -50,12 +39,12 @@ public class gioco
             {
                 game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
             }
+    }
 
-        } 
-        catch (IOException e1) 
-        {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }    
+    public void avanti() throws IOException
+    {
+        game.communication.output("flop/10");
+
+        game.mostraFlop();
     }
 }

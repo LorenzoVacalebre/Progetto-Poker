@@ -32,46 +32,69 @@ public class guiStart extends JFrame
         start.setPreferredSize(new Dimension(200, 50));
         start.setFont(new Font("Arial", Font.PLAIN, 20));
         this.addComponent(770, 20, 0, 0, start);
-        start.addActionListener(new ActionListener() 
-        {
+        start.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) 
-            {
-                try 
-                {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    //creo un oggetto per comunicare
                     communication = new comunicazione();
                     communication.output("client1");
-                    communication.output("...");
-
-                    //creo la partita solo se il server mi autorizza
+        
+                    //linea utile per leggera l'input
                     String linea;
+
+                    //vettore utile a contenere la linea ricevuta splittata
                     String vettore[];
+
+                    //creazione oggetto mano del giocatore
                     carte lista = new carte();
-
-                    for(int i = 0; i < 2; i++)
-                    {
+        
+                    //inserimento carte nella mano del giocatore
+                    for (int i = 0; i < 2; i++) {
+                        //ricevo in input la linea
                         linea = communication.input();
+
+                        //stampo la carta ricevuta(non utile)
                         System.out.println(linea);
+
+                        //splitto il vettore
                         vettore = linea.split(";");
+
+                        //creo oggetto carta
                         carta c;
-
-                        if(vettore[2].equals("true"))
-                            c = new carta(vettore[0], vettore[1], true);
-                        else
-                            c = new carta(vettore[0], vettore[1], false);
-                        
-                        lista.addCarta(c);
+        
+                        //se il vettore viene splittato nel modo corretto
+                        if (vettore.length >= 3) {
+                            //se la carta è scoperta
+                            if (vettore[2].equals("true")) {
+                                //inizializzo l'oggetto carta con le informazioni utili
+                                c = new carta(vettore[0], vettore[1], true);
+                            } else {
+                                //inizializzo l'oggetto carta con le informazioni utili
+                                c = new carta(vettore[0], vettore[1], false);
+                            }
+        
+                            //aggiunta della carta nella mano del giocatore
+                            lista.addCarta(c);
+                        } else {
+                            System.err.println("Formato di input non valido dal server.");
+                        }
                     }
-
+        
+                    //creo la partita
                     game = new guiGame(communication, lista);
+                    
+                    //nascondo la finestra di avvio partita
                     setVisible(false);
-                    game.isClose = false;
-                    game.setVisible(true);
 
-                    
-                    
+                    //inizio il gioco
+                    game.isClose = false;
+
+                    //visualizzo la finestra del gioco con le carte
+                    game.setVisible(true);
+        
                 } catch (IOException e1) {
-                    // TODO Auto-generated catch block
+                    // Gestisci l'eccezione in modo appropriato, ad esempio, mostrando un messaggio di errore.
                     e1.printStackTrace();
                 }
             }
