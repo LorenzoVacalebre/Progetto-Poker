@@ -20,7 +20,7 @@ import java.net.UnknownHostException;
 
     public comunicazione() throws UnknownHostException, IOException 
     {
-        this.clientSocket = new Socket("127.0.0.1", 666);
+        this.clientSocket = new Socket("172.16.102.120", 666);
         this.input = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
         this.output = new PrintWriter(clientSocket.getOutputStream(), true);
     }

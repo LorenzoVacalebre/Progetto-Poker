@@ -37,11 +37,6 @@ public class guiStart extends JFrame {
                     communication = new comunicazione();
                     communication.output("client");
 
-                    // aspetto qualche secondo in modo tale che riceva tutti i client il server
-                    // Non usare Thread.sleep in un'applicazione GUI principale
-                    // Qui si dovrebbe considerare l'uso di SwingWorker o un'alternativa simile
-                    // per evitare il blocco dell'interfaccia utente.
-
                     communication.output("carte");
                     String stringa;
                     String[] carteRicevute;
