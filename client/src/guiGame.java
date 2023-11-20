@@ -303,13 +303,13 @@ public class guiGame extends JFrame
 
                 JLabel labelCarta = new JLabel(new ImageIcon(imgCarta));
                 if (i == 1)
-                    this.addComponent(0, 0, 0, 200, labelCarta);
+                    this.addComponent(0, 0, 0, 100, labelCarta);
                 else if (i == 2)
-                    this.addComponent(0, 0, 0, 0, labelCarta);
+                    this.addComponent(0, 100, 0, 0, labelCarta);
                 else if (i == 3)
-                    this.addComponent(0, 400, 0, 0, labelCarta);
+                    this.addComponent(0, 300, 0, 0, labelCarta);
                 else
-                    this.addComponent(0, 200, 0, 0, labelCarta);
+                    this.addComponent(0, 0, 0, 300, labelCarta);
 
             } catch (IOException e) {
                 e.printStackTrace();
