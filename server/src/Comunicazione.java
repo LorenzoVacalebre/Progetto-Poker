@@ -44,11 +44,6 @@ public class Comunicazione {
             //inzializzazione socket del server
             this.serverSocket = new ServerSocket(port);
 
-            /* RICHIAMO METODO PER TESTARE IL FUNZIONAMENTO DELLA COMUNICAZIONE TCP
-            while(true)
-                this.comunicazioneTest();
-            */
-
             //mantenimento server in ascolto
             while (true) {
                 //accetta connessione da client diversi fino a quando questi diventano 3
@@ -57,7 +52,6 @@ public class Comunicazione {
                 } else {
                     if(this.gioco.getStatus() == false) { //se il gioco non è attivo
                         this.gioco.setStatusTrue(); //set stato del gioco a true
-                        this.gioco.creaMazzi(); //creazione mazzi
                         this.turnoGiocatore = 0; //imposto il turno del giocatore a 0 (tocca al primo giocatore)
                     }
                     else {

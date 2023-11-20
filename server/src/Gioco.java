@@ -39,7 +39,19 @@ public class Gioco {
     //////////////////////////////////////////////////////////////////////
 
     //costruttore utile solamente per ottenere la lista dei giocatori
-    public Gioco(GestioneGiocatori listaCompleta) { this.listaGiocatori = listaCompleta; this.flopBanco = new Mazzo(); }
+    public Gioco(GestioneGiocatori listaCompleta) 
+    { 
+        this.listaGiocatori = listaCompleta; this.flopBanco = new Mazzo(); 
+
+        this.mazzoDaGioco = new Mazzo();
+        //riempimento mazzo da gioco
+        this.mazzoDaGioco.riempiMazzo();
+        //mischiamento mazzo da gioco
+        this.mazzoDaGioco.mischiaMazzo();
+
+        //mazzo utilizzato per inserirci le carte scartate
+        this.mazzoCarteScartate = new Mazzo();
+    }
 
     //metodo utile ad impostare il giocatore temporaneo che ha effettuato una determinata richiesta
     public void setPosGiocatoreEffRic(int nG){ this.posGiocatoreEffRic = nG; }
@@ -82,20 +94,6 @@ public class Gioco {
 
     //metodo per restituire scommessa totale
     public float getScommessaTot(){ return this.scommessaTotale; }
-
-    //metodo utile ad avviare il gioco
-    public void creaMazzi()
-    {
-        //mazzo utilizzato per giocare
-        this.mazzoDaGioco = new Mazzo();
-        //riempimento mazzo da gioco
-        this.mazzoDaGioco.riempiMazzo();
-        //mischiamento mazzo da gioco
-        this.mazzoDaGioco.mischiaMazzo();
-
-        //mazzo utilizzato per inserirci le carte scartate
-        this.mazzoCarteScartate = new Mazzo();
-    }
 
     //metodo per distribuire le carte a tutti i giocatori
     public Carta distribuisciCarta()

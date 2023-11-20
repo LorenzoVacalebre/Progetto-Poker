@@ -94,7 +94,14 @@ public class guiGame extends JFrame
             public void actionPerformed(ActionEvent e)  
             {
                 try {
-                    play.scommetti();
+                    if(play.isYourTurn)
+                    {
+                        play.scommetti();
+                        play.riceviTurno();
+                    }  
+                    else 
+                        inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
+                    //play.controlloVincita();
 
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
@@ -114,7 +121,14 @@ public class guiGame extends JFrame
             public void actionPerformed(ActionEvent e)  
             {
                 try {
-                    play.passa();
+                    if(play.isYourTurn)
+                    {
+                        play.scommetti();
+                        play.riceviTurno();
+                    }  
+                    else 
+                        inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
+
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -175,7 +189,6 @@ public class guiGame extends JFrame
 
         this.mostraManoIniziale();
         this.mostraFlopIniziale();
-        play.riceviTurno();
         
     }
 
