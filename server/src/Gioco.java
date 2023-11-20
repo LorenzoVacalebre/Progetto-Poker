@@ -111,6 +111,9 @@ public class Gioco {
         //creo un nuovo giocatore tmp
         Giocatore giocatore = this.listaGiocatori.ottieniGiocatore(pos);
     
+        //ottengo la socket
+        this.socketClientTmp = this.listaGiocatori.getGiocatore(pos).getSocket();
+
         //se non viene trovato alcun giocatore non faccio niente
         if (giocatore == null) {
             return;

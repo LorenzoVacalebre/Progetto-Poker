@@ -128,9 +128,6 @@ public class Comunicazione {
         this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
         //mi salvo la socket
         this.gioco.setSocketClientTmp(s);
-
-        //è il turno del giocatore 
-        this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(true);
         
         if(this.tmp == 0){
             for(int i = 0; i < this.listaGiocatori.size(); i++)
@@ -142,16 +139,16 @@ public class Comunicazione {
                 //distribuzione flop lato server
                 this.gioco.distribuisciFlop();
                 //invio flop al client 
-                this.inviaflop(posClientCheEffettuaRichiesta);
+                this.inviaflop(i);
             }
             this.tmp++;
+            //invio al client in questione che è il suo turno
+            this.invioInformazioniAlClientStato();
         }
 
         //se è il turno dell'ultimo giocatore
         if(posClientCheEffettuaRichiesta == this.listaGiocatori.size() - 1)
         {
-            //invio al client in questione che è il suo turno
-            this.invioInformazioniAlClient(s, "true");
             //ricevo la sua richiesta e la salvo
             this.riceviRichiestaDalClient(s);
             //eseguo il suo turno data la richiesta
@@ -169,12 +166,12 @@ public class Comunicazione {
             this.inviaInfoATutti(s);
 
             //"spengo" il gioco
-            this.gioco.setStatusFalse();    
+            this.gioco.setStatusFalse();   
+            
+            this.tmp = 0;
         }
         else //eseguo il turno degli altri
         {
-            //invio al client in questione che è il suo turno
-            this.invioInformazioniAlClient(s, "true");
             //ricevo la sua richiesta e la salvo
             this.riceviRichiestaDalClient(s);
             //eseguo il suo turno data la richiesta
@@ -199,6 +196,20 @@ public class Comunicazione {
         //salvataggio funzione richiesta dal client in questione
         this.gioco.setFunzioneRichiesta(funzioneRichiesta);
     } 
+
+    //metodo utile ad inviare lo stato del gioco a tutti i client
+    private void invioInformazioniAlClientStato() throws IOException
+    {
+        //scorro tutta la lista dei giocatori
+        for(int i = 0; i < this.listaGiocatori.size(); i++)
+        {
+            if(this.listaGiocatori.getGiocatore(i).equals(this.listaGiocatori.getGiocatore(this.turnoGiocatore)))
+                this.invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "true");
+            else
+                //se no invio che ha perso
+                this.invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "false");        
+        }
+    }
 
     //metodo utile ad inviare una qualsiasi informazione al client
     public void invioInformazioniAlClient(Socket clientSocket, String messaggio) throws IOException
