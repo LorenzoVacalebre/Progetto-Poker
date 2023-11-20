@@ -31,12 +31,11 @@ public class guiGame extends JFrame
 
     private JButton scommetti;
     private JButton passa;
-    private JButton alzaPuntata;
 
     public comunicazione communication;
     public gioco play;
-    private carte carte;
-    private carte flop;
+    public carte carte;
+    public carte flop;
 
     /***
      * COSTRUTTORE CHE MI PERMETTE DI GESTIRE TUTTA LA GRAFICA DEL GIOCO E IL SUO FUNZIONAMENTO A LIVELLO GRAFICO
@@ -96,6 +95,7 @@ public class guiGame extends JFrame
             {
                 try {
                     play.scommetti();
+
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
@@ -113,26 +113,12 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                play.passa();         
-            }
-        });
-
-        //bottone avanti
-        alzaPuntata = new JButton("Avanti");
-        alzaPuntata.setPreferredSize(new Dimension(200, 50));
-        alzaPuntata.setFont(new Font("Arial", Font.PLAIN, 20));
-        this.addComponent(700, 1200, 0, 0, alzaPuntata);
-        alzaPuntata.addActionListener(new ActionListener() 
-        {
-           @Override
-            public void actionPerformed(ActionEvent e)  
-            {
                 try {
-                    play.avanti();
+                    play.passa();
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
-                }
+                } 
             }
         });
         
@@ -187,8 +173,9 @@ public class guiGame extends JFrame
         setSize(1500, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        this.mostraManoGiocatore();
-        this.mostraFlop();
+        this.mostraManoIniziale();
+        this.mostraFlopIniziale();
+        play.riceviTurno();
         
     }
 
@@ -260,7 +247,7 @@ public class guiGame extends JFrame
     }
 
     //metodo per visualizzare nel modo corretto la mano del giocatore
-    public void mostraManoGiocatore() throws IOException
+    public void mostraManoIniziale() throws IOException
     {
         //percorso file della carta
         String percorsoCarta = "";
@@ -286,7 +273,7 @@ public class guiGame extends JFrame
         }
     }
 
-    public void mostraFlop() throws IOException
+    public void mostraFlopIniziale() throws IOException
     {
 
         String percorsoCarta = "client/immagini/carte/";
@@ -316,6 +303,8 @@ public class guiGame extends JFrame
             }
         }
     }
+
+
 
     
 

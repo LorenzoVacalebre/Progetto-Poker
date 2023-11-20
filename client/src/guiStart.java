@@ -37,7 +37,6 @@ public class guiStart extends JFrame {
                     communication = new comunicazione();
                     communication.output("client");
 
-                    communication.output("carte");
                     String stringa;
                     String[] carteRicevute;
                     carte listacarte = new carte();
