@@ -4,7 +4,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 public class Carta {
-    //informazione di una carta da poker
+    //informazioni di una carta da poker
     private String numero;
     private String seme;
     //boolean per sapere se la carta dovrà essere coperta o no
@@ -20,11 +20,6 @@ public class Carta {
     public String getSeme() { return seme;}
     //get se carta è scoperta
     public boolean isFaceUp() { return isFaceUp; }
-
-    //metodo per scoprire la carta
-    public void scopriCarta(){ this.isFaceUp = true;}
-    //metodo per coprire la carte
-    public void copriCarta(){ this.isFaceUp = false;}
 
     //costruttore di default
     public Carta(String numero, String seme)

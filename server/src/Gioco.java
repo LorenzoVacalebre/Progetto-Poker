@@ -513,7 +513,9 @@ public class Gioco {
     
     //metodo utile a trovare la posizione della combinazione nell'array
     private int trovaPosizioneCombinazione(String[] combinazioni, String combinazione) {
+        //scorro lista completa
         for (int i = 0; i < combinazioni.length; i++) {
+            //se trovo la stessa combinazione
             if (combinazioni[i].equals(combinazione)) {
                 return i;
             }

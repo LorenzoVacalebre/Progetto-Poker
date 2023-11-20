@@ -17,9 +17,10 @@ public class GestioneGiocatori {
     }
 
     //metodo per aggiungere un nuovo giocatore alla lista
-    public boolean aggiungiGiocatore(Giocatore giocatore)
+    public boolean aggiungiGiocatore(Giocatore giocatore, int NUMERO_GIOCATORI)
     {
-        if(this.listaGiocatori.size() < 3) { this.listaGiocatori.add(giocatore); return true; }
+        //se ci sono meno dei giocatori consentiti
+        if(this.listaGiocatori.size() < NUMERO_GIOCATORI) { this.listaGiocatori.add(giocatore); return true; }
         else return false;
     }
 
@@ -31,24 +32,15 @@ public class GestioneGiocatori {
 
     //metodo per ottenere direttamente il giocatore utile
     public Giocatore ottieniGiocatore(Socket socketClient) {
+        //scorro lista giocatori
         for (Giocatore giocatore : this.listaGiocatori) {
+            //se trovo la stessa socket
             if (giocatore.getSocket().getInetAddress().equals(socketClient.getInetAddress())) {
                 return giocatore;
             }
         }
         return null;
     }
-
-    /* 
-    //metodo da usare nel gioco per attivare e disattivare il turno di ogni giocatore alla fine prima di chiudere la connessione
-    //set turno giocatore a true o false
-    public void setTurnoGiocatore(Socket sClientTemp, boolean turno) {
-        for (int i = 0; i < this.listaGiocatori.size(); i++) {
-            if (this.listaGiocatori.get(i).getSocket().getInetAddress().equals(sClientTemp.getInetAddress())) 
-                this.listaGiocatori.get(i).setUrTurn(turno);
-        }
-    }
-    */
 
     //metodo per controllare se un client già connesso tenta di riconnettersi alla partita
     public boolean controllaDuplicati(Socket sClientTemp)
@@ -86,8 +78,10 @@ public class GestioneGiocatori {
     //metodo per eliminare un giocatore dalla partita
     public void pullGiocatore(Socket client)
     {
+        //scorro lista
         for(int i = 0; i < this.listaGiocatori.size(); i++)
         {
+            //se trovo stessa socket rimuovo il giocatore dalla lista giocatori
             if(client.getInetAddress().equals(this.listaGiocatori.get(i).getSocket().getInetAddress()))
                 this.listaGiocatori.remove(i);
         }
