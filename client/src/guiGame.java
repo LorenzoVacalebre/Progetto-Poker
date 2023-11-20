@@ -72,10 +72,7 @@ public class guiGame extends JFrame
 
         //valore che poi invio al client relativo alla puntata
         puntata = 0;
-
-        flop = new carte();
         
-<<<<<<< HEAD
         // sfondo
         try {
             immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
@@ -83,11 +80,6 @@ public class guiGame extends JFrame
             e.printStackTrace();
         }
 
-=======
-
-        //sfondo
-        immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
         pannelloSfondo = creaPannelloConSfondo();
         contenitore = new GridBagConstraints();
         pannelloSfondo.setLayout(new GridBagLayout());
@@ -125,11 +117,7 @@ public class guiGame extends JFrame
             }
         });
 
-<<<<<<< HEAD
         //bottone avanti
-=======
-        //bottone alza la puntata
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
         alzaPuntata = new JButton("Avanti");
         alzaPuntata.setPreferredSize(new Dimension(200, 50));
         alzaPuntata.setFont(new Font("Arial", Font.PLAIN, 20));
@@ -181,7 +169,6 @@ public class guiGame extends JFrame
             this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
             this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
 
-<<<<<<< HEAD
             // immagine del dealer
             imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
             imgDealer = resizeImage(imgDealer, 289, 200);
@@ -193,12 +180,6 @@ public class guiGame extends JFrame
             // gestione dell'eccezione durante la lettura dell'immagine
             e.printStackTrace();
         }
-=======
-        //immagine del dealer
-        imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
-        imgDealer = resizeImage(imgDealer, 289, 200); 
-        this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
 
         // impostazioni di default
         setTitle("Casino.com");
@@ -207,7 +188,7 @@ public class guiGame extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.mostraManoGiocatore();
-        this.mostraFlopIniziale();
+        this.mostraFlop();
         
     }
 
@@ -279,11 +260,7 @@ public class guiGame extends JFrame
     }
 
     //metodo per visualizzare nel modo corretto la mano del giocatore
-<<<<<<< HEAD
     public void mostraManoGiocatore() throws IOException
-=======
-    public void mostraCarteIniziali() throws IOException
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
     {
         //percorso file della carta
         String percorsoCarta = "";
@@ -309,24 +286,18 @@ public class guiGame extends JFrame
         }
     }
 
-<<<<<<< HEAD
-    public void mostraFlopIniziale() throws IOException
-    {
-        
-=======
     public void mostraFlop() throws IOException
     {
         String linea = this.communication.input();
         String[] vett = linea.split("/");
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= 4; i++) {
             String[] vettCarte = vett[i].split(";");
 
             carta c = new carta(vettCarte[0], vettCarte[1], true);
             this.flop.addCarta(c);
         }
 
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
         String percorsoCarta = "client/immagini/carte/";
 
         for (int i = 0; i < this.flop.size(); i++) {
@@ -352,10 +323,7 @@ public class guiGame extends JFrame
             }
         }
     }
-<<<<<<< HEAD
 
     
-=======
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
 }
 

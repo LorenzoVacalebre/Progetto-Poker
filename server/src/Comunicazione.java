@@ -156,7 +156,6 @@ public class Comunicazione {
             else
             {
                 //salvataggio richiesta di uno dei client nel gioco
-<<<<<<< HEAD
                 //this.riceviRichiestaDalClient(s);
 
 
@@ -167,79 +166,6 @@ public class Comunicazione {
                 else{//se no cambio anche la fase
                     this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
                     this.nFase++;
-=======
-                //Allegamento puntata (punta/*numero*)
-                this.riceviRichiestaDalClient(s);
-
-                switch(this.nFase)
-                {
-                    case 2:
-                        //esegui la mano
-                        this.eseguiTurno(s,posClientCheEffettuaRichiesta);
-                        break;
-                    case 3: 
-                        //aggiungo carta al flop
-                        this.gioco.distribuisciFlop();
-
-                        //invio il campo aggiornato al giocatore che ha effettuato la richiesta di flop
-                        //se non è l'ultimo giocatore invio solo la flop
-                        if(this.listaGiocatori.trovaPosizioneClient(s) != NUMERO_GIOCATORI - 1)
-                            this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
-                        else{//se no cambio anche la fase
-                            this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
-                            this.nFase++;
-                        }
-
-                        break;
-                    case 4:
-                        //esegui la mano
-                        this.eseguiTurno(s,posClientCheEffettuaRichiesta);
-                        break;
-                    case 5:
-                        //aggiungo carta al flop
-                        this.gioco.aggiungiCartaFlop();
-
-                        //invio il campo aggiornato al giocatore che ha effettuato la richiesta di flop
-                        //se non è l'ultimo giocatore invio solo la flop
-                        if(this.listaGiocatori.trovaPosizioneClient(s) != NUMERO_GIOCATORI - 1)
-                            this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
-                        else{//se no cambio anche la fase
-                            this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
-                            this.nFase++;
-                        }
-
-                        break;
-                    case 6:
-                        //esegui la mano
-                        this.eseguiTurno(s,posClientCheEffettuaRichiesta);
-                        break;
-                    case 7:
-                        //aggiungo carta al flop
-                        this.gioco.aggiungiCartaFlop();
-
-                        //invio il campo aggiornato al giocatore che ha effettuato la richiesta di flop
-                        //se non è l'ultimo giocatore invio solo la flop
-                        if(this.listaGiocatori.trovaPosizioneClient(s) != NUMERO_GIOCATORI - 1)
-                            this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
-                        else{//se no cambio anche la fase
-                            this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
-                            this.nFase++;
-                        }
-                        break;
-                    case 8:
-                        //esegui la mano
-                        this.eseguiTurno(s,posClientCheEffettuaRichiesta);
-                        break;
-                    case 9:
-                        //visualizzazione tutte le carte
-                        this.gioco.showDown();
-
-                        //assegno il piatto al vincitore
-                        this.gioco.assegnazionePiatto();
-                        break;
-                    default:
-                        break;
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
                 }
 
                 //visualizzazione tutte le carte
@@ -257,10 +183,7 @@ public class Comunicazione {
         //copio la lista modificata dal gioco nella comunicazione
         this.listaGiocatori = this.gioco.getListaGiocatori();
     }
-<<<<<<< HEAD
     }
-=======
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
 
     //salvataggio funzione richiesta da uno dei client nel gioco
     public void riceviRichiestaDalClient(Socket clientSocket) throws IOException
@@ -284,11 +207,7 @@ public class Comunicazione {
     //metodo per inviare la flop singolarmente
     public void inviaflop(int posTmp) throws IOException
     {
-<<<<<<< HEAD
         invioInformazioniAlClient(this.listaGiocatori.getGiocatore(posTmp).getSocket(), this.gioco.flopToString());
-=======
-        invioInformazioniAlClient(this.listaGiocatori.getGiocatore(posTmp).getSocket(), "flop/" + this.gioco.flopToString());
->>>>>>> 153069ef01e1e7b8dfdd1db517f5d18f5f22b3d3
     }
 
     //metodo per inviare le informazioni a ogni client
