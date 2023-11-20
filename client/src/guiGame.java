@@ -315,6 +315,8 @@ public class guiGame extends JFrame
                     this.addComponent(0, 0, 0, 200, labelCarta);
                 else if (i == 2)
                     this.addComponent(0, 0, 0, 0, labelCarta);
+                else if (i == 3)
+                    this.addComponent(0, 400, 0, 0, labelCarta);
                 else
                     this.addComponent(0, 200, 0, 0, labelCarta);
 
