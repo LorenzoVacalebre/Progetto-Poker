@@ -26,23 +26,14 @@ public class gioco
                 System.out.println("scommetto");
                 game.communication.output("scommetti/10");
                 game.isScommesso = true;
-                do
-                {
-                    this.riceviTurno();     
-                }
-                 while(!this.isYourTurn);
+                this.riceviTurno(); 
+                //this.controlloVincita();    
             }
             else
-            {
                 game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
-            }
         }
         else
-        {
             game.inserisciErrore("Aspetta il tuo turno!", "Errore");
-           
-        }            
-
     }
 
 
@@ -57,23 +48,25 @@ public class gioco
                 System.out.println("passo");
                 game.communication.output("passa/0");
                 game.isPassato = true;
-                do
-                {
-                    this.riceviTurno();     
-                }
-                 while(!this.isYourTurn);
+                this.riceviTurno();   
+                this.controlloVincita();    
             }
             else
-            {
                 game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
-
-            }
         }
         else
-        {
             game.inserisciErrore("Aspetta il tuo turno!", "Errore");
-        }
-    
+    }
+
+    private void controlloVincita() throws IOException
+    {
+        String messRicevuto = game.communication.input();
+        System.out.println(messRicevuto);
+        String[] info = messRicevuto.split("/");
+        if(info[2].equals("true"))
+            game.inserisciMex("HAI VINTO " + info[1] + " COIN", "HAI VINTO!!!");
+        else
+            game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
     }
 
     //controllo se è il mio turno
@@ -91,6 +84,5 @@ public class gioco
     {
         game.carte.svuotaCarte();
         game.flop.svuotaCarte();
-
     }
 }

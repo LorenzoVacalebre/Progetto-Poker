@@ -74,11 +74,6 @@ public class Comunicazione {
         //inizializzazione socket con il client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
 
-        if (NUMERO_GIOCATORI > 1) {
-            //controllo per cambiare il turno del giocatore
-            this.turnoGiocatore = (this.turnoGiocatore + 1) % NUMERO_GIOCATORI;
-        }
-
         //visualizzazione quali giocatori entrano in partita
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String funzioneRichiesta = in.readLine();
@@ -108,10 +103,10 @@ public class Comunicazione {
 
         //se il numero di giocatori è superiore a 1 
         if (NUMERO_GIOCATORI > 1) {
-            //imposta i turni nel modo corretto
-            this.turnoGiocatore = (this.turnoGiocatore % NUMERO_GIOCATORI) + 1;
-            //imposta socket corretta
-            s = this.listaGiocatori.getGiocatore(this.turnoGiocatore - 1).getSocket();
+            // Imposta i turni nel modo corretto
+            this.turnoGiocatore = (this.turnoGiocatore % NUMERO_GIOCATORI);
+            s = this.listaGiocatori.getGiocatore(this.turnoGiocatore).getSocket();
+            this.turnoGiocatore = (this.turnoGiocatore + 1) % NUMERO_GIOCATORI;
         } else {
             s = this.listaGiocatori.getGiocatore(0).getSocket();
         }
@@ -144,12 +139,12 @@ public class Comunicazione {
             this.invioInformazioniAlClient(s, "false");
 
             //assegno il piatto al vincitore
-            //s = this.gioco.assegnazionePiatto();
+            s = this.gioco.assegnazionePiatto();
 
             //elimino tutte le carte
-            //this.gioco.showDown();
+            this.gioco.showDown();
 
-            //this.inviaInfoATutti(s);
+            this.inviaInfoATutti(s);
         }
         else 
         {
@@ -201,7 +196,7 @@ public class Comunicazione {
             if(this.listaGiocatori.getGiocatore(i).getSocket().getInetAddress().equals(vincitore.getInetAddress()))
                 this.invioInformazioniAlClient(vincitore, "vincita/" + this.gioco.getScommessaTot() + "/true");
             else
-                this.invioInformazioniAlClient(vincitore, "vincita/" + this.gioco.getScommessaTot() + "/false");
+                this.invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "vincita/" + this.gioco.getScommessaTot() + "/false");
         }
     }
 

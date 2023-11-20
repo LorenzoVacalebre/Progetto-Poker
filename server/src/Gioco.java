@@ -473,23 +473,24 @@ public class Gioco {
     {
         if(this.controlloScalaReale(mC, comb) == true)
             return 0;
-        if(this.controlloScalaColore(mC, comb) == true)
+        else if(this.controlloScalaColore(mC, comb) == true)
             return 1;
-        if(this.controlloPoker(mC, comb) == true)
+        else if(this.controlloPoker(mC, comb) == true)
             return 2;
-        if(this.controlloFull(mC, comb) == true)
+        else if(this.controlloFull(mC, comb) == true)
             return 3;
-        if(this.controlloColore(mC, comb) == true)
+        else if(this.controlloColore(mC, comb) == true)
             return 4;
-        if(this.controlloScala(mC,comb) == true)
+        else if(this.controlloScala(mC,comb) == true)
             return 5;
-        if(this.controlloTris(mC, comb) == true)
+        else if(this.controlloTris(mC, comb) == true)
             return 6;
-        if(this.controlloDoppiaCoppia(mC, comb) == true)
+        else if(this.controlloDoppiaCoppia(mC, comb) == true)
             return 7;
-        if(this.controlloCoppia(mC, comb) == true)
+        else if(this.controlloCoppia(mC, comb) == true)
             return 8;
-        return -1;
+        else
+            return 9;
     }
 
     //metodo per trovare la combinazione migliore
@@ -531,11 +532,14 @@ public class Gioco {
         for(int i = 0; i < this.listaGiocatori.size(); i++)
         {
             //metto insieme una mano dato il flop e la mano del giocatore
-            ManoGiocatore manoDaControllare = this.listaGiocatori.getGiocatore(i).getManoGiocatore();
+            ManoGiocatore manoDaControllare = this.listaGiocatori.getGiocatore(i).getManoGiocatore().mettiInsiemeMano(flopBanco);
             //setto la combinazione tramite dei controlli
             int posCombinazione = this.settaCombinazione(manoDaControllare,combinazioni);
             //imposto la combinazione nella mano di ogni giocatore
-            this.listaGiocatori.getGiocatore(i).getManoGiocatore().setCombinazioneCarte(combinazioni[posCombinazione]);
+            if(posCombinazione != -1)
+                this.listaGiocatori.getGiocatore(i).getManoGiocatore().setCombinazioneCarte(combinazioni[posCombinazione]);
+            else
+                System.out.println("errore nel trovare il vincitore");
         }
 
         //salvo la posizione del vincitore

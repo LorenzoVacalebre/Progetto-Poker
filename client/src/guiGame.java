@@ -246,6 +246,12 @@ public class guiGame extends JFrame
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
+    public void inserisciMex(String message, String title) 
+    {
+        JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+
+
     //metodo per visualizzare nel modo corretto la mano del giocatore
     public void mostraManoIniziale() throws IOException
     {
