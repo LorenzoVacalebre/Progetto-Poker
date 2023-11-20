@@ -288,15 +288,6 @@ public class guiGame extends JFrame
 
     public void mostraFlop() throws IOException
     {
-        String linea = this.communication.input();
-        String[] vett = linea.split("/");
-
-        for (int i = 1; i <= 4; i++) {
-            String[] vettCarte = vett[i].split(";");
-
-            carta c = new carta(vettCarte[0], vettCarte[1], true);
-            this.flop.addCarta(c);
-        }
 
         String percorsoCarta = "client/immagini/carte/";
 
@@ -325,6 +316,8 @@ public class guiGame extends JFrame
             }
         }
     }
+
+    
 
     
 }
