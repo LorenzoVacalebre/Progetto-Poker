@@ -98,6 +98,8 @@ public class guiGame extends JFrame
                     {
                         play.scommetti();
                         play.riceviTurno();
+                        play.riceviTurno();
+
                     }  
                     else 
                         inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
@@ -125,6 +127,8 @@ public class guiGame extends JFrame
                     {
                         play.scommetti();
                         play.riceviTurno();
+                        play.riceviTurno();
+
                     }  
                     else 
                         inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
@@ -294,7 +298,6 @@ public class guiGame extends JFrame
 
     public void mostraFlopIniziale() throws IOException
     {
-
         String percorsoCarta = "client/immagini/carte/";
 
         for (int i = 0; i < this.flop.size(); i++) {

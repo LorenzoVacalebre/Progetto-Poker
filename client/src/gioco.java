@@ -18,55 +18,44 @@ public class gioco
     //metodo che mi permette di scommettere
     public void scommetti() throws IOException
     {
-        if(isYourTurn)
+        //se ho gia passato non permetto di scommetere in quanto si è gia passato il turno ed evito anche di mandare continui messaggi al server
+        if(!game.isPassato && !game.isScommesso)
         {
-            //se ho gia passato non permetto di scommetere in quanto si è gia passato il turno ed evito anche di mandare continui messaggi al server
-            if(!game.isPassato && !game.isScommesso)
-            {
-                System.out.println("scommetto");
-                game.communication.output("scommetti/10");
-                game.isScommesso = true;
-                this.riceviTurno(); 
-                //this.controlloVincita();    
-            }
-            else
-                game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
+            System.out.println("scommetto");
+            game.communication.output("scommetti/10");
+            game.isScommesso = true;  
+            //this.controlloVincita();
         }
         else
-            game.inserisciErrore("Aspetta il tuo turno!", "Errore");
+            game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
+
     }
 
 
     //metodo che mi permette di passare 
     public void passa() throws IOException
     {
-        if(isYourTurn)
+        //se ho passato non posso scommettere ne ripassare 
+        if(!game.isScommesso && !game.isPassato)
         {
-            //se ho passato non posso scommettere ne ripassare 
-            if(!game.isScommesso && !game.isPassato)
-            {
-                System.out.println("passo");
-                game.communication.output("passa/0");
-                game.isPassato = true;
-                this.riceviTurno();   
-                this.controlloVincita();    
-            }
-            else
-                game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
+            System.out.println("passo");
+            game.communication.output("passa/0");
+            game.isPassato = true;  
+            //this.controlloVincita();
+
         }
         else
-            game.inserisciErrore("Aspetta il tuo turno!", "Errore");
+            game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
+    
+        
     }
 
-    private void controlloVincita() throws IOException
+    public void controlloVincita() throws IOException
     {
         String messRicevuto = game.communication.input();
         System.out.println(messRicevuto);
         String[] info = messRicevuto.split("/");
-        if(info[2].equals("true"))
-            game.inserisciMex("HAI VINTO " + info[1] + " COIN", "HAI VINTO!!!");
-        else
-            game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
+        
     }
 
     //controllo se è il mio turno
@@ -75,9 +64,23 @@ public class gioco
         String messRicevuto = game.communication.input();
         System.out.println(messRicevuto);
         if(messRicevuto.equals("true"))
+        {
             this.isYourTurn = true;
-        else
+            return;
+        }
+           
+        else if(messRicevuto.equals("false"))
+        {
             this.isYourTurn = false;
+            return;
+        }
+
+        String[] tmp = messRicevuto.split("/");
+        if(tmp[2].equals("true"))
+            game.inserisciMex("HAI VINTO " + tmp[1] + " COIN", "HAI VINTO!!!");
+        else
+            game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
+
     }
 
     public void svuotaCarteTurno()
