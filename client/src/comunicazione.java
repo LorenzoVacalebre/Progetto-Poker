@@ -12,39 +12,45 @@ import java.net.UnknownHostException;
  * terminateConnection = termina la connessione con il server quando finisce la partita
  */
 
-public class comunicazione 
-{
-    public String serverAddress; //usiamo per adesso localHost
-    public int serverPort; // 666 così sappiamo che sicuramente è utilizzabile
-    public Socket clientSocket;
+ public class comunicazione 
+ {
+    private Socket clientSocket;
+    private BufferedReader input;
+    private PrintWriter output;
 
-    public comunicazione() throws UnknownHostException, IOException
+    public comunicazione() throws UnknownHostException, IOException 
     {
-        this.serverAddress = "192.168.1.72";
-        this.serverPort = 666;
-        clientSocket = new Socket(this.serverAddress, this.serverPort); 
+        this.clientSocket = new Socket("127.0.0.1", 666);
+        this.input = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
+        this.output = new PrintWriter(clientSocket.getOutputStream(), true);
     }
 
-    public String input() throws IOException
+    //metodo utile a ricevere in input un'informazione
+    public String input() throws IOException 
     {
-        String messaggioLetto = "";
-        //con questa riga di codice apro la comunicazione da server a client, quindi le risposte
-        BufferedReader input = new BufferedReader(new InputStreamReader(this.clientSocket.getInputStream()));
-        messaggioLetto = input.readLine();
-        return messaggioLetto; //recupero i dati dal server
-    } 
-
-    public void output(String mess) throws IOException
-    {
-        //con quest'altra posso comunicare tra client e server
-        PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
-        output.println(mess); //cosi facendo invio dati al server
+        String messaggioLetto = input.readLine();
+        return messaggioLetto;
     }
 
-    public void terminateConnection() throws IOException
+    //metodo per inviare informazioni al server
+    public void output(String mess) 
     {
-        this.clientSocket.close();
+        output.println(mess);
     }
+
+    //metodo per terminare totalmente la connessione
+    public void terminateConnection() throws IOException 
+    {
+        try {
+            this.input.close();
+            this.output.close();
+            this.clientSocket.close();
+        } catch (IOException e) {
+            System.err.println("Errore durante la chiusura della connessione: " + e.getMessage());
+            throw e;
+        }
+    }
+}
 
     
-}
+

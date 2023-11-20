@@ -3,46 +3,47 @@ import java.io.IOException;
 public class gioco 
 {
     public guiGame game; 
+    public boolean isYourTurn;
+    
 
     public gioco(guiGame game)
     {
         this.game = game;
+        this.isYourTurn = false;
     }
 
     //metodo che mi permette di scommettere
-    public void scommetti()
+    public void scommetti() throws IOException
     {
-        String messaggioRicevuto = "";
-        try 
+        if(isYourTurn)
         {
-            //se ho gia passato non permetto di scommetere in quanto si è gia passato il turno
-            if(game.isPassato == false)
+            //se ho gia passato non permetto di scommetere in quanto si è gia passato il turno ed evito anche di mandare continui messaggi al server
+            if(!game.isPassato && !game.isScommesso)
             {
-                game.communication.output("chiama/null");
+                System.out.println("scommetto");
+                game.communication.output("scommetti/10");
                 game.isScommesso = true;
-                messaggioRicevuto = game.communication.input();
-                System.out.println(messaggioRicevuto);
+
             }
             else
             {
                 game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
             }
-            
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
         }
+        else
+            game.inserisciErrore("Aspetta il tuo turno!", "Errore");
     }
 
 
     //metodo che mi permette di passare 
     public void passa()
     {
-        try 
+        if(isYourTurn)
         {
-            //se ho passato non posso scommettere
-            if(game.isScommesso == false)
+            //se ho passato non posso scommettere ne ripassare 
+            if(!game.isScommesso && !game.isPassato)
             {
+                System.out.println("passo");
                 game.communication.output("passa/null");
                 game.isPassato = true;
             }
@@ -50,12 +51,38 @@ public class gioco
             {
                 game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
             }
+        }
+        else
+            game.inserisciErrore("Aspetta il tuo turno!", "Errore");
 
-        } 
-        catch (IOException e1) 
+            
+    }
+
+    public void avanti() throws IOException
+    {
+        if(isYourTurn)
         {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }    
+            if(!game.isOver)
+            {
+                System.out.println("vado avanti");
+                game.communication.output("flop/10");
+                //game.mostraFlop();
+                game.isOver = true;
+            }
+            else
+                game.inserisciErrore("Sei già andato avanti, aspetta il tuo turno", "Errore");
+        }
+        else
+            game.inserisciErrore("Aspetta il tuo turno!", "Errore");
+    }
+
+    public void aspettaTurno() throws IOException
+    {
+        game.communication.output("il client sta aspettando");
+        String messaggioLetto = game.communication.input();
+        if(messaggioLetto == "true")
+            this.isYourTurn = true;
+        else 
+            this.isYourTurn = false; 
     }
 }

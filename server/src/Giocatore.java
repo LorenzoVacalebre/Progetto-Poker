@@ -62,7 +62,7 @@ public class Giocatore {
     //metodo per aggiungere la puntata
     public void addPuntata(float p)
     {
-        this.puntata = p;
+        this.puntata += p;
     }
 
     //metodo per sommare puntate

@@ -4,7 +4,8 @@ public class App {
     private static guiStart start;
     public static void main(String[] args) throws Exception 
     {
-        start = new guiStart();       
+        //creo le due gui e visualizzo le carte passate direttamente nella guigame
+        start = new guiStart();      
     }
 
 }

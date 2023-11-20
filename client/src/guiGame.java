@@ -12,7 +12,6 @@ import javax.swing.*;
 
 public class guiGame extends JFrame 
 {
-    private static int PUNTATA_MASSIMA = 1000;
 
     private BufferedImage immagineSfondo;
     private JPanel pannelloSfondo;
@@ -28,16 +27,24 @@ public class guiGame extends JFrame
     public boolean isScommesso;
     public boolean isPassato;
     public boolean isAbbandonato;
+    public boolean isOver;
 
     private JButton scommetti;
     private JButton passa;
     private JButton alzaPuntata;
 
     public comunicazione communication;
-    private gioco play;
+    public gioco play;
     private carte carte;
+    private carte flop;
 
-    public guiGame(comunicazione communication, carte carte) throws IOException 
+    /***
+     * COSTRUTTORE CHE MI PERMETTE DI GESTIRE TUTTA LA GRAFICA DEL GIOCO E IL SUO FUNZIONAMENTO A LIVELLO GRAFICO
+     * @param communication COLLEGAMENTO ALLA CONNESSIONE CON IL SERVER
+     * @param carte LE CARTE PASSATE SARANNO INIZIALMENTE QUELLE DELLA MANO INIZIALE 
+     * @throws IOException
+     */
+    public guiGame(comunicazione communication, carte carte, carte flop) throws IOException 
     {
         //avvio la comunicazione
         this.communication = communication;
@@ -45,8 +52,11 @@ public class guiGame extends JFrame
         //classe che gestisce il gioco in generale interfacciandosi anche con la comunicazione
         this.play = new gioco(this);
 
-        //classe che mi permette di partire gestire le carte
+        //classe che mi permette di partire gestire le carte 
         this.carte = carte;
+
+        //lista con dentro le carte del flop
+        this.flop = flop;
 
         //valore che mi permette di capire quando cambiare pagina e avviare la comunicazione dal main
         isClose = true;
@@ -57,11 +67,19 @@ public class guiGame extends JFrame
         //variavile che mi permette di far abbandonare la partita al client
         isAbbandonato = false;
 
+        //variabile che se impostata a true non posso andare avanti perche ho gia cliccato il pulsante
+        isOver = false;
+
         //valore che poi invio al client relativo alla puntata
         puntata = 0;
         
-        //sfondo
-        immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
+        // sfondo
+        try {
+            immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         pannelloSfondo = creaPannelloConSfondo();
         contenitore = new GridBagConstraints();
         pannelloSfondo.setLayout(new GridBagLayout());
@@ -76,16 +94,20 @@ public class guiGame extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)  
             {
-                play.scommetti();
+                try {
+                    play.scommetti();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                }
             }
-            
         });
 
         //bottone passa
         passa = new JButton("Passa");
         passa.setPreferredSize(new Dimension(200, 50));
         passa.setFont(new Font("Arial", Font.PLAIN, 20));
-        this.addComponent(700, 1200, 0, 0, passa);
+        this.addComponent(600, 1200, 0, 0, passa);
         passa.addActionListener(new ActionListener() 
         {
             @Override
@@ -95,26 +117,22 @@ public class guiGame extends JFrame
             }
         });
 
-        //bottone alza la puntata
-        alzaPuntata = new JButton("Alza la puntata");
+        //bottone avanti
+        alzaPuntata = new JButton("Avanti");
         alzaPuntata.setPreferredSize(new Dimension(200, 50));
         alzaPuntata.setFont(new Font("Arial", Font.PLAIN, 20));
-        this.addComponent(600, 1200, 0, 0, alzaPuntata);
+        this.addComponent(700, 1200, 0, 0, alzaPuntata);
         alzaPuntata.addActionListener(new ActionListener() 
         {
-            @Override
+           @Override
             public void actionPerformed(ActionEvent e)  
             {
-                if(puntata == PUNTATA_MASSIMA)
-                {
-                    puntata = 0;
-                    System.out.println(puntata);
-
+                try {
+                    play.avanti();
+                } catch (IOException e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
                 }
-                else
-                    puntata += 100;
-                    System.out.println(puntata);
-                
             }
         });
         
@@ -141,27 +159,36 @@ public class guiGame extends JFrame
                 }
             });
         
-        //immagini dei giocatori
-        imgGiocatore = ImageIO.read(new File("client/immagini/imgGiocatore.png"));
-        imgGiocatore = resizeImage(imgGiocatore, 70, 70); 
-        this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
-        this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
-        this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
+        try {
+            // immagine del giocatore
+            imgGiocatore = ImageIO.read(new File("client/immagini/imgGiocatore.png"));
+            imgGiocatore = resizeImage(imgGiocatore, 70, 70);
+            
+            // aggiunta delle immagini del giocatore alle componenti
+            this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
+            this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
+            this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
 
-        //immagine del dealer
-        imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
-        imgDealer = resizeImage(imgDealer, 320, 200); 
-        this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
+            // immagine del dealer
+            imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
+            imgDealer = resizeImage(imgDealer, 289, 200);
+            
+            // aggiunta dell'immagine del dealer alla componente
+            this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
+            
+        } catch (IOException e) {
+            // gestione dell'eccezione durante la lettura dell'immagine
+            e.printStackTrace();
+        }
 
-        //impostazioni di default
+        // impostazioni di default
         setTitle("Casino.com");
         add(pannelloSfondo);
         setSize(1500, 900);
-        //chiudo la finestra e chiudo anche il "programma"
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //immagine delle carte
-        this.mostraCarteIniziali();
+        this.mostraManoGiocatore();
+        this.mostraFlopIniziale();
         
     }
 
@@ -203,7 +230,7 @@ public class guiGame extends JFrame
         Desktop.getDesktop().browse(new URI(url));
     }
 
-    public void leftGame() throws IOException, URISyntaxException 
+    private void leftGame() throws IOException, URISyntaxException 
     {
         if (menuTendina.getSelectedItem().equals("Abbandona partita"))
         {
@@ -232,22 +259,62 @@ public class guiGame extends JFrame
         JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    public void mostraCarteIniziali() throws IOException
+    //metodo per visualizzare nel modo corretto la mano del giocatore
+    public void mostraManoGiocatore() throws IOException
     {
+        //percorso file della carta
         String percorsoCarta = "";
+
+        //scorro la mano
         for(int i= 0; i<this.carte.size(); i++)
         {
+            //salvo il percorso file per ottenere l'immagine corretta 
             percorsoCarta = carte.lista.get(i).getNumero() + carte.lista.get(i).getSeme() + ".png";
+
+            //trovo l'immagine dalla giusta cartella
             imgcarta = ImageIO.read(new File("client/immagini/carte/" + percorsoCarta));
-            imgcarta = resizeImage(imgcarta, 80, 100); 
+
+            //imposto la corretta dimensione
+            imgcarta = resizeImage(imgcarta, 80, 100);
+            
+            //inserimento nel modo corretto delle carte nelle apposite label
             if(i == 1)
-            {
                 this.addComponent(250, 0, 0, 100, new JLabel(new ImageIcon(imgcarta)));
-            }
             else
                 this.addComponent(250, 100, 0, 0, new JLabel(new ImageIcon(imgcarta)));
+
         }
     }
 
+    public void mostraFlopIniziale() throws IOException
+    {
+        
+        String percorsoCarta = "client/immagini/carte/";
+
+        for (int i = 0; i < this.flop.size(); i++) {
+            carta currentCarta = this.flop.lista.get(i);
+
+            String percorsoCompleto = percorsoCarta + currentCarta.getNumero() + currentCarta.getSeme() + ".png";
+
+            try {
+                BufferedImage imgCarta = ImageIO.read(new File(percorsoCompleto));
+
+                imgCarta = resizeImage(imgCarta, 80, 100);
+
+                JLabel labelCarta = new JLabel(new ImageIcon(imgCarta));
+                if (i == 1)
+                    this.addComponent(0, 0, 0, 200, labelCarta);
+                else if (i == 2)
+                    this.addComponent(0, 0, 0, 0, labelCarta);
+                else
+                    this.addComponent(0, 200, 0, 0, labelCarta);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    
 }
 

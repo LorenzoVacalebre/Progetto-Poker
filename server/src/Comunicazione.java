@@ -24,9 +24,6 @@ public class Comunicazione {
     //gioco
     private Gioco gioco;
 
-    //fase
-    private int nFase = 0;
-
     //giocatore che deve giocare
     private int turnoGiocatore = 0;
 
@@ -41,7 +38,7 @@ public class Comunicazione {
     }
 
     //metodo per avviare la prima volta il server
-    public void avviaServer() {
+    public void avviaServer() throws InterruptedException {
         try {
             //inzializzazione socket del server
             this.serverSocket = new ServerSocket(port);
@@ -76,21 +73,12 @@ public class Comunicazione {
         //inizializzazione socket con il client utile alla gestione del flusso dei dati
         Socket clientSocket = this.serverSocket.accept();
 
-        if(NUMERO_GIOCATORI > 1) {
-            //controllo/cambio turno giocatore
-            if(this.turnoGiocatore == 0)
-                this.turnoGiocatore = 1;
-            else if(this.turnoGiocatore == 1)
-                this.turnoGiocatore = 2;
-            else if(this.turnoGiocatore == 2)
-                this.turnoGiocatore = 1;
+        if (NUMERO_GIOCATORI > 1) {
+            //controllo per cambiare il turno del giocatore
+            this.turnoGiocatore = (this.turnoGiocatore + 1) % NUMERO_GIOCATORI;
         }
-        /* 
-        else if(this.turnoGiocatore == 3)
-            this.turnoGiocatore = 1;
-            */
 
-        //log gioco
+        //visualizzazione quali giocatori entrano in partita
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String funzioneRichiesta = in.readLine();
         System.out.println(funzioneRichiesta);
@@ -100,9 +88,6 @@ public class Comunicazione {
 
         //aggiunta giocatore alla lista di giocatori presenti in partita
         this.listaGiocatori.aggiungiGiocatore(g);
-
-        //metodo per chiudere la connessione
-        // clientSocket.close();
     
         //incremento numero di client connessi al server
         this.numeroDiClientConnessi++;
@@ -117,28 +102,21 @@ public class Comunicazione {
     private void leggiRichiesteDeiClient() throws IOException {
 
         //definizio socket utile alla trasmissione di dati con i vari giocatori della partita
-        Socket s = new Socket();
+        Socket s = null;
+        int posClientCheEffettuaRichiesta;
 
-        if(NUMERO_GIOCATORI > 1) {
-        if(this.turnoGiocatore == 1)
-            this.turnoGiocatore = 2;
-        else if(this.turnoGiocatore == 2)
-            this.turnoGiocatore = 1;
-
-        //inzializzazione socket con client utile alla gestione del flusso dei dati
-        if(this.turnoGiocatore == 1)
+        //se il numero di giocatori è superiore a 1 
+        if (NUMERO_GIOCATORI > 1) {
+            //imposta i turni nel modo corretto
+            this.turnoGiocatore = (this.turnoGiocatore % NUMERO_GIOCATORI) + 1;
+            //imposta socket corretta
+            s = this.listaGiocatori.getGiocatore(this.turnoGiocatore - 1).getSocket();
+        } else {
             s = this.listaGiocatori.getGiocatore(0).getSocket();
-        if(this.turnoGiocatore == 2)
-            s = this.listaGiocatori.getGiocatore(1).getSocket();
-
-        }else
-            s = this.listaGiocatori.getGiocatore(0).getSocket();
-
-        //controllo se il giocatore desidera abbandonare la partita
-        //this.controlloAbbandonaPartita(s);
-
+        }
+    
         //salvataggio client che effettua richiesta
-        int posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneClient(s);
+        posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneClient(s);
 
         //se il giocatore è ancora presente nel round
         if(this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).getStatusPresenza() == true)
@@ -157,6 +135,10 @@ public class Comunicazione {
                 this.gioco.trovaGiocatoreEInserisciCartaInMano();
                 /////
                 this.gioco.trovaGiocatoreEInserisciCartaInMano();
+                /////
+                this.gioco.distribuisciFlop();
+                ////
+                this.inviaflop(posClientCheEffettuaRichiesta);
 
                 //se il client che ha effettuato la connessione è il terzo controllo se il round è già attivo
                 if(this.listaGiocatori.trovaPosizioneClient(s) == NUMERO_GIOCATORI - 1) {
@@ -164,129 +146,68 @@ public class Comunicazione {
                     this.gioco.setStatusRoundTrue();
                     //non è il turno del giocatore 
                     this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
-                    this.nFase = 2;
                 }
                 else
                     //non è il turno del giocatore 
                     this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
             }
+
+            /*
             else
             {
                 //salvataggio richiesta di uno dei client nel gioco
-                //Allegamento puntata (punta/*numero*)
-                this.riceviRichiestaDalClient(s);
-                switch(this.nFase)
-                {
-                    case 2:
-                        //esegui la mano
-                        this.eseguiTurno(s,posClientCheEffettuaRichiesta);
-                        break;
-                    case 3: 
-                        //aggiungo carta al flop
-                        this.gioco.distribuisciFlop();
+                //this.riceviRichiestaDalClient(s);
 
-                        //invio a tutti il nuovo flop
-                        this.inviaInfoATutti();
 
-                        this.nFase++;
-                        break;
-                    case 4:
-                        //esegui la mano
-                        this.eseguiTurno(s,posClientCheEffettuaRichiesta);
-                        break;
-                    case 5:
-                        //aggiungo carta al flop
-                        this.gioco.aggiungiCartaFlop();
-
-                        //invio a tutti il nuovo flop
-                        this.inviaInfoATutti();
-                        this.nFase++;
-                        break;
-                    case 6:
-                        //esegui la mano
-                        this.eseguiTurno(s,posClientCheEffettuaRichiesta);
-                        break;
-                    case 7:
-                        //aggiungo carta al flop
-                        this.gioco.aggiungiCartaFlop();
-
-                        //invio a tutti il nuovo flop
-                        this.inviaInfoATutti();
-                        this.nFase++;
-                        break;
-                    case 8:
-                        //esegui la mano
-                        this.eseguiTurno(s,posClientCheEffettuaRichiesta);
-                        break;
-                    case 9:
-                        //visualizzazione tutte le carte
-                        this.gioco.showDown();
-
-                        //assegno il piatto al vincitore
-                        this.gioco.assegnazionePiatto();
-                        break;
-                    default:
-                        break;
+                //invio il campo aggiornato al giocatore che ha effettuato la richiesta di flop
+                //se non è l'ultimo giocatore invio solo la flop
+                if(this.listaGiocatori.trovaPosizioneClient(s) != NUMERO_GIOCATORI - 1)
+                    this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
+                else{//se no cambio anche la fase
+                    this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
+                    this.nFase++;
                 }
+
+                //visualizzazione tutte le carte
+                this.gioco.showDown();
+
+                //assegno il piatto al vincitore
+                this.gioco.assegnazionePiatto();
             }
         } 
 
         //metodo per chiudere la connessione
         //this.chiudiConnessione(clientSocket);
+        */
 
         //copio la lista modificata dal gioco nella comunicazione
         this.listaGiocatori = this.gioco.getListaGiocatori();
     }
-
-    //metodo utile alla chiusura di una connessione 
-    private void chiudiConnessione(Socket socket) throws IOException {
-        socket.close();
-    }
-
-    //metodo per controllare se un client ha richiesto di abbandonare la partita 
-    public boolean controlloAbbandonaPartita(Socket client) throws IOException
-    {
-        //se il giocatore ha richiesto di abbandonare la partita
-        if(this.riceviRichiestaDalClientString(client).equals("abbandonaPartita")){
-            //rimuovo giocatore dalla partita
-            this.listaGiocatori.pullGiocatore(client);
-            //chiudi comunicazione
-            client.close();
-            //giocatore eliminato
-            return true;
-        }
-        return false;
     }
 
     //salvataggio funzione richiesta da uno dei client nel gioco
     public void riceviRichiestaDalClient(Socket clientSocket) throws IOException
     {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
-            String funzioneRichiesta = in.readLine();
-            this.gioco.setFunzioneRichiesta(funzioneRichiesta);
-        }
-    } 
-
-    //restituisce la richiesta del client come una stringa
-    public String riceviRichiestaDalClientString(Socket clientSocket) throws IOException
-    {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()))) {
-            String funzioneRichiesta = in.readLine();
-            return funzioneRichiesta;
-        }
+        BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        String funzioneRichiesta = in.readLine();
+        this.gioco.setFunzioneRichiesta(funzioneRichiesta);
     } 
 
     public void invioInformazioniAlClient(Socket clientSocket, String messaggio) throws IOException
     {
-        PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
-        output.println(messaggio); //cosi facendo invio dati al server
+        try {
+            PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
+            output.println(messaggio);
+        } catch (IOException e) {
+            System.out.println("ERRORE INVIO INFORMAZIONI!");
+            // Gestione delle eccezioni, ad esempio, log o altre azioni necessarie
+            e.printStackTrace();
+        }
     }
-
-    //metodo per inviare le informazioni a ogni client
-    private void inviaInfoATutti() throws IOException
+    //metodo per inviare la flop singolarmente
+    public void inviaflop(int posTmp) throws IOException
     {
-        for(int i = 0; i < this.listaGiocatori.size(); i++)
-            invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "flop/" + this.gioco.flopToString());
+        invioInformazioniAlClient(this.listaGiocatori.getGiocatore(posTmp).getSocket(), this.gioco.flopToString());
     }
 
     //metodo per inviare le informazioni a ogni client
@@ -306,14 +227,13 @@ public class Comunicazione {
     //metodo per eseguire un turno
     private void eseguiTurno(Socket clientSocket, int posClientCheEffettuaRichiesta) throws IOException
     {
-        if((this.listaGiocatori.trovaPosizioneClient(clientSocket) != NUMERO_GIOCATORI - 1))
+        if((this.listaGiocatori.trovaPosizioneClient(clientSocket) == NUMERO_GIOCATORI - 1))
         {
             //se il gioco è attivo
             if(this.gioco.getStatus() == true)
                 this.gioco.eseguiMano(); //esegui la mano
             //non è il turno del giocatore 
             this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
-            this.nFase++;
         }
         else 
         {

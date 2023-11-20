@@ -31,7 +31,7 @@ public class Mazzo {
         this.mazzo.clear();
 
         //vettori contenenti le informazioni utili alla creazione delle carte
-        String[] semi = {"Cuori", "Quadri", "Fiori", "Picche"};
+        String[] semi = {"cuori", "quadri", "fiori", "picche"};
         String[] numeri = {"1","2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14"};
 
         //riempimento mazzo con tutte le carte utili
@@ -67,6 +67,7 @@ public class Mazzo {
     //metodo utile a riempire il flop
     public void riempiFlop(Mazzo mazzoGioco)
     {
+        this.mazzo.add(mazzoGioco.pull());
         this.mazzo.add(mazzoGioco.pull());
         this.mazzo.add(mazzoGioco.pull());
         this.mazzo.add(mazzoGioco.pull());
@@ -106,9 +107,9 @@ public class Mazzo {
         for(int i = 0; i < this.mazzo.size(); i++)
         {
             if(i == this.mazzo.size() - 1)
-                tmp = this.mazzo.get(i).getNumero() + ";" + this.mazzo.get(i).getSeme() + ";" + this.mazzo.get(i).getIsFacedUp();
+                tmp += this.mazzo.get(i).getNumero() + ";" + this.mazzo.get(i).getSeme() + ";" + this.mazzo.get(i).getIsFacedUp();
             else
-                tmp = this.mazzo.get(i).getNumero() + ";" + this.mazzo.get(i).getSeme() + ";" + this.mazzo.get(i).getIsFacedUp() + "/";
+                tmp += this.mazzo.get(i).getNumero() + ";" + this.mazzo.get(i).getSeme() + ";" + this.mazzo.get(i).getIsFacedUp() + "/";
         }
         return tmp;
     }
