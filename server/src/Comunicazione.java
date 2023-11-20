@@ -28,6 +28,9 @@ public class Comunicazione {
     //giocatore che deve giocare
     private int turnoGiocatore = 0;
 
+    //contatore temporaneo per invio informazioni client
+    private int tmp = 0;
+
     /////////////////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////
 
@@ -129,15 +132,21 @@ public class Comunicazione {
         //è il turno del giocatore 
         this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(true);
         
-        //invio a giocatore una carta della sua mano
-        this.gioco.trovaGiocatoreEInserisciCartaInMano();
-        //invio a giocatore una carta della sua mano
-        this.gioco.trovaGiocatoreEInserisciCartaInMano();
-        //distribuzione flop lato server
-        this.gioco.distribuisciFlop();
-        //invio flop al client 
-        this.inviaflop(posClientCheEffettuaRichiesta);
-        
+        if(this.tmp == 0){
+            for(int i = 0; i < this.listaGiocatori.size(); i++)
+            {
+                //invio a giocatore una carta della sua mano
+                this.gioco.trovaGiocatoreEInserisciCartaInMano(i);
+                //invio a giocatore una carta della sua mano
+                this.gioco.trovaGiocatoreEInserisciCartaInMano(i);
+                //distribuzione flop lato server
+                this.gioco.distribuisciFlop();
+                //invio flop al client 
+                this.inviaflop(posClientCheEffettuaRichiesta);
+            }
+            this.tmp++;
+        }
+
         //se è il turno dell'ultimo giocatore
         if(posClientCheEffettuaRichiesta == this.listaGiocatori.size() - 1)
         {

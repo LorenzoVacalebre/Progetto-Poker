@@ -42,6 +42,13 @@ public class GestioneGiocatori {
         return null;
     }
 
+    //metodo per ottenere direttamente il giocatore utile
+    public Giocatore ottieniGiocatore(int pos) {
+        if(pos > -1)
+            return this.listaGiocatori.get(pos);
+        return null;
+    }
+
     //metodo per controllare se un client già connesso tenta di riconnettersi alla partita
     public boolean controllaDuplicati(Socket sClientTemp)
     {   

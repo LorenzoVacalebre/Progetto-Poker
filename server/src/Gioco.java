@@ -102,14 +102,14 @@ public class Gioco {
     }
 
     //metodo utile a ricavare il giocatore a cui bisogna distribuire la carta
-    public void trovaGiocatoreEInserisciCartaInMano() throws IOException {
+    public void trovaGiocatoreEInserisciCartaInMano(int pos) throws IOException {
         //se la socket è inattiva non faccio niente
         if (this.socketClientTmp == null) {
             return;
         }
     
         //creo un nuovo giocatore tmp
-        Giocatore giocatore = this.listaGiocatori.ottieniGiocatore(this.socketClientTmp);
+        Giocatore giocatore = this.listaGiocatori.ottieniGiocatore(pos);
     
         //se non viene trovato alcun giocatore non faccio niente
         if (giocatore == null) {
