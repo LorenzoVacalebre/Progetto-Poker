@@ -4,10 +4,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import java.io.*;
+
 import java.net.*;
 
 public class Comunicazione {
-    static int NUMERO_GIOCATORI = 1;
+    static int NUMERO_GIOCATORI = 2;
 
     //socket del server
     private ServerSocket serverSocket;
@@ -118,71 +119,52 @@ public class Comunicazione {
         //salvataggio client che effettua richiesta
         posClientCheEffettuaRichiesta = this.listaGiocatori.trovaPosizioneClient(s);
 
-        //se il giocatore è ancora presente nel round
-        if(this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).getStatusPresenza() == true)
+        this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
+        this.gioco.setSocketClientTmp(s);
+
+        //è il turno del giocatore 
+        this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(true);
+        
+        this.gioco.trovaGiocatoreEInserisciCartaInMano();
+        /////
+        this.gioco.trovaGiocatoreEInserisciCartaInMano();
+        /////
+        this.gioco.distribuisciFlop();
+        /////
+        this.inviaflop(posClientCheEffettuaRichiesta);
+        
+        if(posClientCheEffettuaRichiesta == this.listaGiocatori.size() - 1)
         {
-            this.gioco.setPosGiocatoreEffRic(posClientCheEffettuaRichiesta);
-            this.gioco.setSocketClientTmp(s);
+            this.invioInformazioniAlClient(s, "true");
+            /////
+            this.riceviRichiestaDalClient(s);
+            /////
+            this.eseguiTurno(s, posClientCheEffettuaRichiesta);
+            /////
+            this.invioInformazioniAlClient(s, "false");
 
-            //è il turno del giocatore 
-            this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(true);
-            
-            /////APPOSTO///// DISTRIBUZIONE DUE CARTE A TUTTI I GIOCATORI // PRIMA FASE
-            if(this.gioco.statoRound() == false) {
+            //assegno il piatto al vincitore
+            //s = this.gioco.assegnazionePiatto();
 
-                //inserimento carte dal mazzo alla mano del giocatore
-                
-                this.gioco.trovaGiocatoreEInserisciCartaInMano();
-                /////
-                this.gioco.trovaGiocatoreEInserisciCartaInMano();
-                /////
-                this.gioco.distribuisciFlop();
-                ////
-                this.inviaflop(posClientCheEffettuaRichiesta);
+            //elimino tutte le carte
+            //this.gioco.showDown();
 
-                //se il client che ha effettuato la connessione è il terzo controllo se il round è già attivo
-                if(this.listaGiocatori.trovaPosizioneClient(s) == NUMERO_GIOCATORI - 1) {
-                    //round a true
-                    this.gioco.setStatusRoundTrue();
-                    //non è il turno del giocatore 
-                    this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
-                }
-                else
-                    //non è il turno del giocatore 
-                    this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
-            }
+            //this.inviaInfoATutti(s);
+        }
+        else 
+        {
+            this.invioInformazioniAlClient(s, "true");
+            /////
+            this.riceviRichiestaDalClient(s);
+            /////
+            this.eseguiTurno(s, posClientCheEffettuaRichiesta);
+            /////
+            this.invioInformazioniAlClient(s, "false");
 
-            /*
-            else
-            {
-                //salvataggio richiesta di uno dei client nel gioco
-                //this.riceviRichiestaDalClient(s);
-
-
-                //invio il campo aggiornato al giocatore che ha effettuato la richiesta di flop
-                //se non è l'ultimo giocatore invio solo la flop
-                if(this.listaGiocatori.trovaPosizioneClient(s) != NUMERO_GIOCATORI - 1)
-                    this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
-                else{//se no cambio anche la fase
-                    this.inviaflop(this.listaGiocatori.trovaPosizioneClient(s));
-                    this.nFase++;
-                }
-
-                //visualizzazione tutte le carte
-                this.gioco.showDown();
-
-                //assegno il piatto al vincitore
-                this.gioco.assegnazionePiatto();
-            }
-        } 
-
-        //metodo per chiudere la connessione
-        //this.chiudiConnessione(clientSocket);
-        */
+        }
 
         //copio la lista modificata dal gioco nella comunicazione
         this.listaGiocatori = this.gioco.getListaGiocatori();
-    }
     }
 
     //salvataggio funzione richiesta da uno dei client nel gioco
@@ -190,6 +172,7 @@ public class Comunicazione {
     {
         BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         String funzioneRichiesta = in.readLine();
+        System.out.println(funzioneRichiesta);
         this.gioco.setFunzioneRichiesta(funzioneRichiesta);
     } 
 
@@ -211,68 +194,24 @@ public class Comunicazione {
     }
 
     //metodo per inviare le informazioni a ogni client
-    public void inviaInfoATuttiFine() throws IOException
+    public void inviaInfoATutti(Socket vincitore) throws IOException
     {
         for(int i = 0; i < this.listaGiocatori.size(); i++)
-            invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "fine");
-    }
-
-    //metodo per scoprire tutte le carte
-    public void inviaInfoATuttiScopriCarte() throws IOException
-    {
-        for(int i = 0; i < this.listaGiocatori.size(); i++)
-            invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "scopriTutto");
+        {
+            if(this.listaGiocatori.getGiocatore(i).getSocket().getInetAddress().equals(vincitore.getInetAddress()))
+                this.invioInformazioniAlClient(vincitore, "vincita/" + this.gioco.getScommessaTot() + "/true");
+            else
+                this.invioInformazioniAlClient(vincitore, "vincita/" + this.gioco.getScommessaTot() + "/false");
+        }
     }
 
     //metodo per eseguire un turno
     private void eseguiTurno(Socket clientSocket, int posClientCheEffettuaRichiesta) throws IOException
     {
-        if((this.listaGiocatori.trovaPosizioneClient(clientSocket) == NUMERO_GIOCATORI - 1))
-        {
-            //se il gioco è attivo
-            if(this.gioco.getStatus() == true)
-                this.gioco.eseguiMano(); //esegui la mano
-            //non è il turno del giocatore 
-            this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
-        }
-        else 
-        {
-            //se il gioco è attivo
-            if(this.gioco.getStatus() == true)
-                this.gioco.eseguiMano(); //esegui la mano
-
-            //non è il turno del giocatore 
-            this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
-        }
+        //se il gioco è attivo
+        this.gioco.eseguiMano(); //esegui la mano
+        
+        //non è il turno del giocatore 
+        this.listaGiocatori.getGiocatore(posClientCheEffettuaRichiesta).setUrTurn(false);
     }
-    ////////////////////////////////////////////////////////////////////////////////
-    //METODO UTILE AI TEST PER VERIFICARE IL FUNZIONAMENTO DELLA COMUNICAZIONE TCP//
-    ////////////////////////////////////////////////////////////////////////////////
-    /*private void comunicazioneTest()
-    {
-        try {
-            System.out.println("Server in ascolto sulla porta " + this.port);
-
-            //attendi la connessione da un client
-            Socket clientSocket = serverSocket.accept();
-            System.out.println("Connessione accettata da " + clientSocket.getInetAddress());
-
-            //ottieni lo stream di input dal socket
-            InputStream inputStream = clientSocket.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
-            //leggi il messaggio inviato dal client
-            String clientMessage = bufferedReader.readLine();
-            System.out.println("Messaggio ricevuto dal client: " + clientMessage);
-
-            //chiudi la connessione
-            this.chiudiConnessione(clientSocket);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    */
-    ////////////////////////////////////////////////////////////////////////////////
 }

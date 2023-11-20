@@ -167,18 +167,12 @@ public class Gioco {
     //metodo utile a fare terminare il gioco
     public void showDown() throws IOException
     {
-        //invio a tutti i client che devono scoprire le carte
-        this.comunicazioneTmp.inviaInfoATuttiScopriCarte();
-
         //finisci la partita
         this.statusRound = false;
 
         //svuota tutto
         this.svuotaMani();
         this.svuotaFlop();
-
-        //invio a tutti che la partita è finita
-        this.comunicazioneTmp.inviaInfoATuttiFine();
     }
 
     //metodo per ordinare la mano del giocatore
@@ -537,7 +531,7 @@ public class Gioco {
         for(int i = 0; i < this.listaGiocatori.size(); i++)
         {
             //metto insieme una mano dato il flop e la mano del giocatore
-            ManoGiocatore manoDaControllare = this.listaGiocatori.getGiocatore(i).getManoGiocatore().mettiInsiemeMano(flopBanco);
+            ManoGiocatore manoDaControllare = this.listaGiocatori.getGiocatore(i).getManoGiocatore();
             //setto la combinazione tramite dei controlli
             int posCombinazione = this.settaCombinazione(manoDaControllare,combinazioni);
             //imposto la combinazione nella mano di ogni giocatore
@@ -552,13 +546,12 @@ public class Gioco {
     }
 
     //metodo per assegnare il piatto al giocatore vincente
-    public void assegnazionePiatto() throws IOException
+    public Socket assegnazionePiatto() throws IOException
     {
         //salvo la socket del vincitore per mandargli la vincita
         Socket socketVincitore = this.trovaVincitore();
 
-        //invio al client temporaneo l'informazione utile, in questo caso viene svuotata la sua mano
-        this.comunicazioneTmp.invioInformazioniAlClient(socketVincitore, "vincita/" + this.scommessaTotale);
+        return socketVincitore;
     }
 
     //metodo utile a giocare il turno al client che ha effettuato la richiesta al server
@@ -576,9 +569,6 @@ public class Gioco {
                 //eliminazione mano del giocatore che ha richiesto la funzione passa
                 this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getManoGiocatore().svuotaMano(this.mazzoCarteScartate);
 
-                //invio al client temporaneo l'informazione utile, in questo caso viene svuotata la sua mano
-                this.comunicazioneTmp.invioInformazioniAlClient(this.socketClientTmp, "svuotaMano");
-
                 //il giocatore non parteciperà più al round
                 this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).setStatusPresenza(false);
 
@@ -594,18 +584,6 @@ public class Gioco {
                 this.scommessaTotale += this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getPuntata();
 
                 //System.out.println(tmp[1]);
-
-                break;
-            case "alzaPuntata":
-
-                //sommo la nuova cifra aumentata alla scommessa già effettuata in precedenza
-                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).addPuntata(Float.parseFloat(tmp[1]));
-
-                //aggiunta scommessa giocatore al piatto
-                this.scommessaTotale += Float.parseFloat(tmp[1]);
-
-                break;
-            case "conferma":
 
                 break;
             default:

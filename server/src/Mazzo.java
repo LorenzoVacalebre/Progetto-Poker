@@ -93,13 +93,6 @@ public class Mazzo {
         return this.mazzo.get(pos);
     }
 
-    //metodo utile al controllo del mazzo cioè se vieni implementato correttamente
-    public void visualizza()
-    {
-        for(int i = 0; i < this.mazzo.size(); i++)
-            this.mazzo.get(i).visCarta();
-    }
-
     //metodo per trasformare il mazzo in una string
     public String flopToString()
     {
