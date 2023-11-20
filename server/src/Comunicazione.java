@@ -58,9 +58,11 @@ public class Comunicazione {
                     if(this.gioco.getStatus() == false) {
                         this.gioco.setStatusTrue(); //set stato del gioco a true
                         this.gioco.creaMazzi(); //creazione mazzi
+                        this.turnoGiocatore = 0;
                     }
-                    else 
+                    else {
                         this.leggiRichiesteDeiClient(); //metodo utile a leggere continuamente tutte le richieste del client
+                    }
                 }
             }
         } catch (IOException e) {
@@ -145,6 +147,8 @@ public class Comunicazione {
             this.gioco.showDown();
 
             this.inviaInfoATutti(s);
+
+            this.gioco.setStatusFalse();    
         }
         else 
         {
