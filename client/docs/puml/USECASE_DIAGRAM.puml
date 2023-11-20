@@ -4,10 +4,7 @@ actor Player as P
 
 rectangle "Azioni del Giocatore" {
   usecase "Fare una scommessa" as Bet
-  usecase "Rilanciare" as Raise
   usecase "Passare" as Fold
-  usecase "Mostrare le carte" as ShowCards
-  usecase "Confronto" as Comparison
   usecase "Menu" as Menu
 }
 
@@ -18,10 +15,7 @@ rectangle {
 }
 
 P --> Bet
-P --> Raise
 P --> Fold
-P --> ShowCards
-P --> Comparison
 P --> Menu
 
 Menu --> Rules

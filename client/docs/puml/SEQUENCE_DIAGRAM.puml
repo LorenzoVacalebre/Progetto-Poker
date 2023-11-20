@@ -5,15 +5,11 @@ actor Player as P
 participant Server as S
 
 P --> Bet : "Fare una scommessa"
-P --> Raise : "Rilanciare"
 P --> Fold : "Passare"
-P --> ShowCards : "Mostrare le carte"
-P --> Comparison : "Confronto"
 P --> Menu : "Menu"
 
 Menu --> Rules : "Consultare le regole"
 Menu --> Quit : "Abbandonare la partita"
-Menu --> Comunication : "Comunica con un avversario"
 
 P --> S : "Invia Richiesta"
 S --> P : "Risposta del Server"
