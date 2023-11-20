@@ -4,12 +4,15 @@ public class gioco
 {
     public guiGame game; 
     public boolean isYourTurn;
+    public boolean haiVinto;
     
 
     public gioco(guiGame game)
     {
         this.game = game;
         this.isYourTurn = false;
+        this.haiVinto = false;
+
     }
 
     //metodo che mi permette di scommettere
@@ -23,7 +26,11 @@ public class gioco
                 System.out.println("scommetto");
                 game.communication.output("scommetti/10");
                 game.isScommesso = true;
-
+                do
+                {
+                    this.riceviTurno();     
+                }
+                 while(!this.isYourTurn);
             }
             else
             {
@@ -31,12 +38,16 @@ public class gioco
             }
         }
         else
+        {
             game.inserisciErrore("Aspetta il tuo turno!", "Errore");
+           
+        }            
+
     }
 
 
     //metodo che mi permette di passare 
-    public void passa()
+    public void passa() throws IOException
     {
         if(isYourTurn)
         {
@@ -44,45 +55,42 @@ public class gioco
             if(!game.isScommesso && !game.isPassato)
             {
                 System.out.println("passo");
-                game.communication.output("passa/null");
+                game.communication.output("passa/0");
                 game.isPassato = true;
+                do
+                {
+                    this.riceviTurno();     
+                }
+                 while(!this.isYourTurn);
             }
             else
             {
                 game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
+
             }
         }
         else
-            game.inserisciErrore("Aspetta il tuo turno!", "Errore");
-
-            
-    }
-
-    public void avanti() throws IOException
-    {
-        if(isYourTurn)
         {
-            if(!game.isOver)
-            {
-                System.out.println("vado avanti");
-                game.communication.output("flop/10");
-                //game.mostraFlop();
-                game.isOver = true;
-            }
-            else
-                game.inserisciErrore("Sei già andato avanti, aspetta il tuo turno", "Errore");
-        }
-        else
             game.inserisciErrore("Aspetta il tuo turno!", "Errore");
+        }
+    
     }
 
-    public void aspettaTurno() throws IOException
+    //controllo se è il mio turno
+    public void riceviTurno() throws IOException
     {
-        game.communication.output("il client sta aspettando");
-        String messaggioLetto = game.communication.input();
-        if(messaggioLetto == "true")
+        String messRicevuto = game.communication.input();
+        System.out.println(messRicevuto);
+        if(messRicevuto.equals("true"))
             this.isYourTurn = true;
-        else 
-            this.isYourTurn = false; 
+        else
+            this.isYourTurn = false;
+    }
+
+    public void svuotaCarteTurno()
+    {
+        game.carte.svuotaCarte();
+        game.flop.svuotaCarte();
+
     }
 }
