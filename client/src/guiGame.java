@@ -325,11 +325,5 @@ public class guiGame extends JFrame
             }
         }
     }
-
-
-
-    
-
-    
 }
 

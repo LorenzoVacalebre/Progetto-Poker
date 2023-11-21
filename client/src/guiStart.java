@@ -86,6 +86,8 @@ public class guiStart extends JFrame {
 
                     // Nascondo la finestra di avvio partita
                     setVisible(false);
+                    
+                    game.play.riceviTurno();
 
                     // Inizio il gioco
                     game.isClose = false;

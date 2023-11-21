@@ -8,7 +8,7 @@ import java.net.*;
 
 public class Comunicazione {
     //numero massimo di giocatori presenti nella partita
-    public static final int NUMERO_GIOCATORI = 2;
+    public static final int NUMERO_GIOCATORI = 1;
 
     //socket del server
     private ServerSocket serverSocket;
