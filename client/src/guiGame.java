@@ -102,8 +102,11 @@ public class guiGame extends JFrame
 
                     }  
                     else 
+                    {
                         inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
-                    //play.controlloVincita();
+                        play.riceviTurno();
+                        return;
+                    }
 
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
@@ -131,7 +134,11 @@ public class guiGame extends JFrame
 
                     }  
                     else 
+                    {
                         inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
+                        play.riceviTurno();
+                        return;
+                    }
 
                 } catch (IOException e1) {
                     // TODO Auto-generated catch block
@@ -192,8 +199,7 @@ public class guiGame extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.mostraManoIniziale();
-        this.mostraFlopIniziale();
-        
+        this.mostraFlopIniziale();        
     }
 
     //metodo che mi permette di posizionare qualsiasi componente e di posizionarlo

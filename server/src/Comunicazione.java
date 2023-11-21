@@ -8,7 +8,7 @@ import java.net.*;
 
 public class Comunicazione {
     //numero massimo di giocatori presenti nella partita
-    public static final int NUMERO_GIOCATORI = 1;
+    public static final int NUMERO_GIOCATORI = 2;
 
     //socket del server
     private ServerSocket serverSocket;
@@ -114,8 +114,6 @@ public class Comunicazione {
             this.turnoGiocatore = (this.turnoGiocatore % NUMERO_GIOCATORI);
             //mi salvo la socket del giocatore che deve giocare
             s = this.listaGiocatori.getGiocatore(this.turnoGiocatore).getSocket();
-            //cambio il turno
-            this.turnoGiocatore = (this.turnoGiocatore + 1) % NUMERO_GIOCATORI;
         } 
         else 
             //se cè solo un giocatore prendo la sua sola socket
@@ -142,9 +140,11 @@ public class Comunicazione {
                 this.inviaflop(i);
             }
             this.tmp++;
-            //invio al client in questione che è il suo turno
-            this.invioInformazioniAlClientStato();
         }
+
+        this.invioInformazioniAlClientStato();
+
+        this.turnoGiocatore = (this.turnoGiocatore + 1) % NUMERO_GIOCATORI;
 
         //se è il turno dell'ultimo giocatore
         if(posClientCheEffettuaRichiesta == this.listaGiocatori.size() - 1)
@@ -153,8 +153,6 @@ public class Comunicazione {
             this.riceviRichiestaDalClient(s);
             //eseguo il suo turno data la richiesta
             this.eseguiTurno(s, posClientCheEffettuaRichiesta);
-            //invio al client in questione che non è il suo turno
-            this.invioInformazioniAlClient(s, "false");
 
             //assegno il piatto al vincitore
             s = this.gioco.assegnazionePiatto();
@@ -176,8 +174,6 @@ public class Comunicazione {
             this.riceviRichiestaDalClient(s);
             //eseguo il suo turno data la richiesta
             this.eseguiTurno(s, posClientCheEffettuaRichiesta);
-            //invio al client in questione che non è il suo turno
-            this.invioInformazioniAlClient(s, "false");
         }
 
         //copio la lista modificata dal gioco nella comunicazione
@@ -203,7 +199,7 @@ public class Comunicazione {
         //scorro tutta la lista dei giocatori
         for(int i = 0; i < this.listaGiocatori.size(); i++)
         {
-            if(this.listaGiocatori.getGiocatore(i).equals(this.listaGiocatori.getGiocatore(this.turnoGiocatore)))
+            if(this.listaGiocatori.getGiocatore(i).getSocket().getInetAddress().equals(this.listaGiocatori.getGiocatore(this.turnoGiocatore).getSocket().getInetAddress()))
                 this.invioInformazioniAlClient(this.listaGiocatori.getGiocatore(i).getSocket(), "true");
             else
                 //se no invio che ha perso

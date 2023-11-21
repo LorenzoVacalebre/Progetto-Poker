@@ -23,6 +23,7 @@ public class gioco
         {
             System.out.println("scommetto");
             game.communication.output("scommetti/10");
+            game.play.riceviTurno();
             game.isScommesso = true;  
             //this.controlloVincita();
         }
@@ -40,6 +41,7 @@ public class gioco
         {
             System.out.println("passo");
             game.communication.output("passa/0");
+            game.play.riceviTurno();
             game.isPassato = true;  
             //this.controlloVincita();
 

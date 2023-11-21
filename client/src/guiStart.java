@@ -95,6 +95,13 @@ public class guiStart extends JFrame {
                     // Visualizzo la finestra del gioco con le carte
                     game.setVisible(true);
 
+                    if(game.play.isYourTurn)
+                        game.inserisciMex("E' il tuo turno!", "ENTRA");
+                    else{
+                        game.inserisciErrore("Non è il tuo turno!", "NON PUOI ENTRARE");
+                        game.play.riceviTurno();
+                    }
+
                 } catch (IOException e1) {
                     // Gestisci l'eccezione in modo appropriato, ad esempio, mostrando un messaggio di errore.
                     e1.printStackTrace();
