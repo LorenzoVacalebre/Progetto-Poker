@@ -24,11 +24,29 @@ public class guiStart extends JFrame {
         contenitore = new GridBagConstraints();
         pannelloSfondo.setLayout(new GridBagLayout());
 
+
         // bottone di inizio
         start = new JButton("Unisciti alla partita");
         start.setPreferredSize(new Dimension(200, 50));
         start.setFont(new Font("Arial", Font.PLAIN, 20));
+
+
+        Timer colorTimer = new Timer(100, new ActionListener() {
+            float hue = 0; 
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hue = (hue + 0.01f) % 1.0f;
+                Color newColor = Color.getHSBColor(hue, 1, 1);
+                start.setForeground(newColor);
+            }
+        });
+
+        colorTimer.start();
+
         this.addComponent(770, 20, 0, 0, start);
+
+
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

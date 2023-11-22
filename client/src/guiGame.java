@@ -26,13 +26,11 @@ public class guiGame extends JFrame
     private BufferedImage img50;
     private BufferedImage img100;
 
-    private JLabel venti;
-    private JLabel cinquanta;
-    private JLabel cento;
-
     private JLabel ventiClick;
     private JLabel cinquantaClick;
     private JLabel centoClick;
+
+    private JLabel visualizzaPuntata;
   
     public boolean isClose;
     public int puntata;
@@ -218,7 +216,7 @@ public class guiGame extends JFrame
                     {
                         puntata+=50;
                         play.cinquanta--;
-                        aggiornaFish();
+                        //aggiornaFish();
                     }
                     else
                         inserisciErrore("Hai finito queste fish", "Errore");
@@ -234,7 +232,7 @@ public class guiGame extends JFrame
                     {
                         puntata+=100;
                         play.cento--;
-                        aggiornaFish();
+                        //aggiornaFish();
                     }
                     else
                         inserisciErrore("Hai finito queste fish", "Errore");
@@ -250,15 +248,13 @@ public class guiGame extends JFrame
                     {
                         puntata+=20;
                         play.venti--;
-                        aggiornaFish();
+                        //aggiornaFish();
                     }
                     else
                         inserisciErrore("Hai finito queste fish", "Errore");
 
                 }
             });
-
-            aggiornaFish();
 
             this.addComponent(300, 1000, 0, 0, ventiClick);
             this.addComponent(300, 1200, 0, 0, cinquantaClick);
@@ -417,19 +413,10 @@ public class guiGame extends JFrame
 
     public void aggiornaFish()
     {
-        
+        visualizzaPuntata.setForeground(Color.WHITE);
+        visualizzaPuntata.setFont(fontTesto);
 
-        venti.setForeground(Color.WHITE);
-        cinquanta.setForeground(Color.WHITE);
-        cento.setForeground(Color.WHITE);
-
-        venti.setFont(fontTesto);
-        cinquanta.setFont(fontTesto);
-        cento.setFont(fontTesto);
-
-        this.addComponent(0, 1200, 300, 0, venti);
-        this.addComponent(0, 1200, 220, 0, cinquanta);
-        this.addComponent(0, 1200, 140, 0, cento);
+        this.addComponent(1000, 0, 0, 0, visualizzaPuntata);
     }
 }
 
