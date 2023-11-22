@@ -5,6 +5,9 @@ public class gioco
     public guiGame game; 
     public boolean isYourTurn;
     public boolean haiVinto;
+    public int venti;
+    public int cinquanta;
+    public int cento;
     
 
     public gioco(guiGame game)
@@ -12,26 +15,27 @@ public class gioco
         this.game = game;
         this.isYourTurn = false;
         this.haiVinto = false;
+        this.venti = 15;
+        this.cinquanta = 10;
+        this.cento = 5;
 
     }
 
     //metodo che mi permette di scommettere
-    public void scommetti() throws IOException
+    public void scommetti(int puntata) throws IOException
     {
         //se ho gia passato non permetto di scommetere in quanto si è gia passato il turno ed evito anche di mandare continui messaggi al server
         if(!game.isPassato && !game.isScommesso)
         {
             System.out.println("scommetto");
-            game.communication.output("scommetti/10");
+            game.communication.output("scommetti/" + puntata);
             game.play.riceviTurno();
-            game.isScommesso = true;  
-            //this.controlloVincita();
+            game.isScommesso = true; 
+            game.aggiornaFish(); 
         }
         else
             game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
-
     }
-
 
     //metodo che mi permette di passare 
     public void passa() throws IOException
@@ -48,8 +52,6 @@ public class gioco
         }
         else
             game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
-    
-        
     }
 
     public void controlloVincita() throws IOException

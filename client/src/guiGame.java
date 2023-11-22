@@ -1,6 +1,8 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +22,18 @@ public class guiGame extends JFrame
     private BufferedImage imgGiocatore;
     private BufferedImage imgDealer;
     private BufferedImage imgcarta;
+    private BufferedImage img20;
+    private BufferedImage img50;
+    private BufferedImage img100;
 
+    private JLabel venti;
+    private JLabel cinquanta;
+    private JLabel cento;
+
+    private JLabel ventiClick;
+    private JLabel cinquantaClick;
+    private JLabel centoClick;
+  
     public boolean isClose;
     public int puntata;
 
@@ -31,6 +44,8 @@ public class guiGame extends JFrame
 
     private JButton scommetti;
     private JButton passa;
+
+    private Font fontTesto;
 
     public comunicazione communication;
     public gioco play;
@@ -71,7 +86,10 @@ public class guiGame extends JFrame
 
         //valore che poi invio al client relativo alla puntata
         puntata = 0;
-        
+
+        //setto il font delle scritte
+        fontTesto = new Font("Arial", Font.PLAIN, 20);
+
         // sfondo
         try {
             immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
@@ -86,7 +104,7 @@ public class guiGame extends JFrame
         //bottone scommetti
         scommetti = new JButton("Scommetti");
         scommetti.setPreferredSize(new Dimension(200, 50));
-        scommetti.setFont(new Font("Arial", Font.PLAIN, 20));
+        scommetti.setFont(fontTesto);
         this.addComponent(500, 1200, 0, 0, scommetti);
         scommetti.addActionListener(new ActionListener() 
         {
@@ -96,9 +114,10 @@ public class guiGame extends JFrame
                 try {
                     if(play.isYourTurn)
                     {
-                        play.scommetti();
+                        play.scommetti(puntata);
                         play.riceviTurno();
                         play.riceviTurno();
+                        puntata = 0;
 
                     }  
                     else 
@@ -118,7 +137,7 @@ public class guiGame extends JFrame
         //bottone passa
         passa = new JButton("Passa");
         passa.setPreferredSize(new Dimension(200, 50));
-        passa.setFont(new Font("Arial", Font.PLAIN, 20));
+        passa.setFont(fontTesto);
         this.addComponent(600, 1200, 0, 0, passa);
         passa.addActionListener(new ActionListener() 
         {
@@ -128,7 +147,7 @@ public class guiGame extends JFrame
                 try {
                     if(play.isYourTurn)
                     {
-                        play.scommetti();
+                        play.passa();
                         play.riceviTurno();
                         play.riceviTurno();
 
@@ -151,7 +170,7 @@ public class guiGame extends JFrame
         String[] opzioniMenu = {"Menù Funzionalità", "Regolamento", "Abbandona partita"};
         menuTendina = new JComboBox<>(opzioniMenu);
         menuTendina.setPreferredSize(new Dimension(200, 40));
-        menuTendina.setFont(new Font("Arial", Font.PLAIN, 17));
+        menuTendina.setFont(fontTesto);
         this.addComponent(0, 1200, 700, 0, menuTendina);
 
             //regolamento
@@ -174,17 +193,81 @@ public class guiGame extends JFrame
             // immagine del giocatore
             imgGiocatore = ImageIO.read(new File("client/immagini/imgGiocatore.png"));
             imgGiocatore = resizeImage(imgGiocatore, 70, 70);
-            
-            // aggiunta delle immagini del giocatore alle componenti
             this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
             this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
             this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
+
+            //immagini delle fish
+            img20 = ImageIO.read(new File("client/immagini/20.png"));
+            img50 = ImageIO.read(new File("client/immagini/50.png"));
+            img100 = ImageIO.read(new File("client/immagini/100.png"));
+
+            img20 = resizeImage(img20, 70, 70);
+            img50 = resizeImage(img50, 110, 110);
+            img100 = resizeImage(img100, 75, 75);
+
+            ventiClick = new JLabel(new ImageIcon(img20));
+            cinquantaClick = new JLabel(new ImageIcon(img50));
+            centoClick = new JLabel(new ImageIcon(img100));
+
+            cinquantaClick.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) 
+                {
+                    if(play.cinquanta>0)
+                    {
+                        puntata+=50;
+                        play.cinquanta--;
+                        aggiornaFish();
+                    }
+                    else
+                        inserisciErrore("Hai finito queste fish", "Errore");
+
+                }
+            });
+
+            centoClick.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) 
+                {
+                    if(play.cento>0)
+                    {
+                        puntata+=100;
+                        play.cento--;
+                        aggiornaFish();
+                    }
+                    else
+                        inserisciErrore("Hai finito queste fish", "Errore");
+
+                }
+            });
+
+            ventiClick.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) 
+                {
+                    if(play.venti>0)
+                    {
+                        puntata+=20;
+                        play.venti--;
+                        aggiornaFish();
+                    }
+                    else
+                        inserisciErrore("Hai finito queste fish", "Errore");
+
+                }
+            });
+
+            aggiornaFish();
+
+            this.addComponent(300, 1000, 0, 0, ventiClick);
+            this.addComponent(300, 1200, 0, 0, cinquantaClick);
+            this.addComponent(300, 1400, 0, 0, centoClick);
 
             // immagine del dealer
             imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
             imgDealer = resizeImage(imgDealer, 289, 200);
             
-            // aggiunta dell'immagine del dealer alla componente
             this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
             
         } catch (IOException e) {
@@ -330,6 +413,23 @@ public class guiGame extends JFrame
                 e.printStackTrace();
             }
         }
+    }
+
+    public void aggiornaFish()
+    {
+        
+
+        venti.setForeground(Color.WHITE);
+        cinquanta.setForeground(Color.WHITE);
+        cento.setForeground(Color.WHITE);
+
+        venti.setFont(fontTesto);
+        cinquanta.setFont(fontTesto);
+        cento.setFont(fontTesto);
+
+        this.addComponent(0, 1200, 300, 0, venti);
+        this.addComponent(0, 1200, 220, 0, cinquanta);
+        this.addComponent(0, 1200, 140, 0, cento);
     }
 }
 
