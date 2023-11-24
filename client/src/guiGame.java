@@ -1,5 +1,5 @@
+//UTILI
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -8,291 +8,671 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
+/////////////////////////////////
 
-public class guiGame extends JFrame 
-{
+//classe finestra gioco
+public class guiGame extends JFrame {
 
-    private BufferedImage immagineSfondo;
+    //immagine dello sfondo
+    private BufferedImage immagineSfondo; 
+
+    //pannello sfondo
     private JPanel pannelloSfondo;
+
+    //contenitore generale
     private GridBagConstraints contenitore;
+
+    //menu a tendina
     private JComboBox<String> menuTendina;
+
+    //IMMAGINI GENERALI
+    //giocatori
     private BufferedImage imgGiocatore;
+
+    //dealer
     private BufferedImage imgDealer;
+
+    //immagini listaCarteGiocatore
     private BufferedImage imgcarta;
+    //////////////////////////////
+
+    //IMMAGINI FISH
+    //20
     private BufferedImage img20;
+
+    //50
     private BufferedImage img50;
+
+    //100
     private BufferedImage img100;
+    ////////////////////////////
 
-    private JLabel ventiClick;
-    private JLabel cinquantaClick;
-    private JLabel centoClick;
+    //"CONTENITORI FISH"
+    private JLabel containerFish20;
+    private JLabel containerFish50;
+    private JLabel containerFish100;
+    //////////////////////////////
 
+    //container puntata visualizzata
     private JLabel visualizzaPuntata;
-  
-    public boolean isClose;
-    public int puntata;
 
+    //METODI UTILI ALLA LOGICA DEL GIOCO
+    public boolean isClose;
     public boolean isScommesso;
     public boolean isPassato;
     public boolean isAbbandonato;
     public boolean isOver;
+    //////////////////////////////////////
 
+    //BOTTONI
     private JButton scommetti;
     private JButton passa;
+    //////////////////////////
+        
+    //punatata
+    public int puntata;
 
+    //font generale del testo
     private Font fontTesto;
 
+    //attributi utili al funzionamento del gioco
     public comunicazione communication;
     public gioco play;
-    public carte carte;
+    public carte listaCarteGiocatore;
     public carte flop;
 
-    /***
-     * COSTRUTTORE CHE MI PERMETTE DI GESTIRE TUTTA LA GRAFICA DEL GIOCO E IL SUO FUNZIONAMENTO A LIVELLO GRAFICO
-     * @param communication COLLEGAMENTO ALLA CONNESSIONE CON IL SERVER
-     * @param carte LE CARTE PASSATE SARANNO INIZIALMENTE QUELLE DELLA MANO INIZIALE 
-     * @throws IOException
-     */
-    public guiGame(comunicazione communication, carte carte, carte flop) throws IOException 
-    {
-        //avvio la comunicazione
+    //costruttore con parametri
+    public guiGame(comunicazione communication, carte listaCarteGiocatore, carte flop) throws IOException {
         this.communication = communication;
-
-        //classe che gestisce il gioco in generale interfacciandosi anche con la comunicazione
         this.play = new gioco(this);
-
-        //classe che mi permette di partire gestire le carte 
-        this.carte = carte;
-
-        //lista con dentro le carte del flop
+        this.listaCarteGiocatore = listaCarteGiocatore;
         this.flop = flop;
+        this.isClose = true;
+        this.isScommesso = false;
+        this.isAbbandonato = false;
+        this.isOver = false;
+        this.puntata = 0;
+        this.fontTesto = new Font("Arial", Font.PLAIN, 20);
+        this.visualizzaPuntata = new JLabel("Puntata = 0");
 
-        //valore che mi permette di capire quando cambiare pagina e avviare la comunicazione dal main
-        isClose = true;
+        //metodo che inizializza tutta l'interfaccia grafica del gioco
+        this.initUI();
 
-        //variabile che mi fa capire se il client vuole scommettere
-        isScommesso = false;
+        //imposta titolo
+        this.setTitle("Casino.com");
 
-        //variavile che mi permette di far abbandonare la partita al client
-        isAbbandonato = false;
+        //add pannello sfondo
+        this.add(this.pannelloSfondo);
 
-        //variabile che se impostata a true non posso andare avanti perche ho gia cliccato il pulsante
-        isOver = false;
+        //set grandezza finestra da gioco
+        this.setSize(1500, 900);
 
-        //valore che poi invio al client relativo alla puntata
-        puntata = 0;
+        //se l'utente chiude la finestra principale, il programma termina
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //setto il font delle scritte
-        fontTesto = new Font("Arial", Font.PLAIN, 20);
+        //metodo per mostrare la mano del giocatore
+        this.mostraManoGiocatore();
 
-        // sfondo
+        //metodo per mostrare la flop sul bancone
+        this.mostraFlopSulBanco();
+    }
+
+    //metodo contenente altri metodi per sistemare e inizializzare per intero la finestra di gioco
+    private void initUI() throws IOException
+    {
+        //creazione sfondo gioco
+        this.setupBackground();
+
+        //creazione bottoni
+        this.setupBottoni();
+
+        //creazione menu a tendina
+        this.setupMenu();
+
+        //creazione tutte le immagini
+        this.setupImmagini();
+
+        //aggiungo label puntata
+        this.aggiornaFish();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////METODO UTILE ALLO SFONDO//////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    //metodo utile a sistemare lo sfondo
+    private void setupBackground() throws IOException {
         try {
-            immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
-        } catch (IOException e) {
+            //lettura percorso file e salvataggio immagine
+            this.immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
+        } 
+        catch (IOException e) 
+        {
             e.printStackTrace();
         }
 
-        pannelloSfondo = creaPannelloConSfondo();
-        contenitore = new GridBagConstraints();
-        pannelloSfondo.setLayout(new GridBagLayout());
+        //creazione pannello sfondo
+        this.pannelloSfondo = this.creaPannelloConSfondo();
 
-        //bottone scommetti
-        scommetti = new JButton("Scommetti");
-        scommetti.setPreferredSize(new Dimension(200, 50));
-        scommetti.setFont(fontTesto);
-        this.addComponent(500, 1200, 0, 0, scommetti);
-        scommetti.addActionListener(new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)  
-            {
-                try {
-                    if(play.isYourTurn)
-                    {
-                        play.scommetti(puntata);
-                        play.riceviTurno();
-                        play.riceviTurno();
-                        puntata = 0;
+        //creazione contenitore
+        this.contenitore = new GridBagConstraints();
 
-                    }  
-                    else 
-                    {
-                        inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
-                        play.riceviTurno();
-                        return;
-                    }
+        //crea un layout a griglia
+        this.pannelloSfondo.setLayout(new GridBagLayout());
+    }
+    /////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////
 
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+
+    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////METODI UTILI AI BOTTONI///////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    //metodo utile a sistemare i bottoni
+    private void setupBottoni() {
+        //creazione bottone scommetti
+        this.scommetti = createButton("Scommetti", e -> {
+            try {
+                //logica bottone scommetti
+                this.handleScommettiButton();
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         });
 
-        //bottone passa
-        passa = new JButton("Passa");
-        passa.setPreferredSize(new Dimension(200, 50));
-        passa.setFont(fontTesto);
-        this.addComponent(600, 1200, 0, 0, passa);
-        passa.addActionListener(new ActionListener() 
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)  
-            {
-                try {
-                    if(play.isYourTurn)
-                    {
-                        play.passa();
-                        play.riceviTurno();
-                        play.riceviTurno();
+        //aggiunta bottone scommetti alla finestra
+        this.addComponent(600, 1172, 0, 0, this.scommetti);
 
-                    }  
-                    else 
-                    {
-                        inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
-                        play.riceviTurno();
-                        return;
-                    }
-
-                } catch (IOException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } 
+        //creazione bottone passa
+        this.passa = this.createButton("Passa", e -> {
+            try {
+                //logica bottone passa
+                this.handlePassaButton();
+            } catch (IOException e1) {
+                e1.printStackTrace();
             }
         });
-        
-        //menu a tendina
+        //aggiunta bottone passa alla finestra
+        this.addComponent(700, 1172, 0, 0, this.passa);
+    }
+
+    //metodo per creare i bottoni
+    private JButton createButton(String text, ActionListener actionListener) {
+        //creo bottone
+        JButton button = new JButton(text);
+
+        //sistemazione grafica
+        this.sistemaBottoni(button);
+
+        //aggiunta evento necessario
+        button.addActionListener(actionListener);
+
+        //restituisco il bottone creato
+        return button;
+    }
+
+    //metodo utile alla logica del bottone per scommettere
+    private void handleScommettiButton() throws IOException {
+
+        //se è il tuo turno giochi
+        if (this.play.isYourTurn) {
+
+            //imposta la scommessa
+            this.play.scommetti(this.puntata);
+
+            //attesa per ricevere delle informazioni dal server
+            this.play.aspettaInformazioniDalServer();
+
+            //attesa per ricevere delle informazioni dal server
+            this.play.aspettaInformazioniDalServer();
+
+            //set puntata iniziale a 0
+            this.puntata = 0;
+        } 
+        else //se no ti attacchi
+        {
+            //errore
+            this.inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
+
+            //inzio ad aspettare una nuova informazione per poter giocare
+            this.play.aspettaInformazioniDalServer();
+        }
+    }
+    
+    //metodo utile alla logica del bottone per passare
+    private void handlePassaButton() throws IOException {
+
+        //se è il tuo turno gioca
+        if (this.play.isYourTurn) {
+
+            //passa il turno
+            this.play.passa();
+
+            //attesa per ricevere delle informazioni dal server
+            this.play.aspettaInformazioniDalServer();
+
+            //attesa per ricevere delle informazioni dal server
+            this.play.aspettaInformazioniDalServer();
+        } 
+        else //se no ti attacchi
+        {
+            //errore
+            this.inserisciErrore("NON E' IL TUO TURNO", "NON ENTRA");
+
+            //inzio ad aspettare una nuova informazione per poter giocare
+            this.play.aspettaInformazioniDalServer();
+        }
+    }
+    //////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    //////////////////////METODO UTILE AL MENU//////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////
+    //metodo utile alla costruzione del menù a tendina
+    private void setupMenu() {
+
+        //vettore contenente le varie funzionalità
         String[] opzioniMenu = {"Menù Funzionalità", "Regolamento", "Abbandona partita"};
-        menuTendina = new JComboBox<>(opzioniMenu);
-        menuTendina.setPreferredSize(new Dimension(200, 40));
-        menuTendina.setFont(fontTesto);
-        this.addComponent(0, 1200, 700, 0, menuTendina);
 
-            //regolamento
-            menuTendina.addActionListener(new ActionListener()
-            //anonymous inner class: serve per creare una classe "leggera" o allungare una classe gia esistente
-            {
-                @Override
-                public void actionPerformed(ActionEvent e) 
-                {
-                    try {
-                        actionRules();
-                        leftGame();
-                    } catch (IOException | URISyntaxException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            });
-        
+        //inzializzazione menù
+        this.menuTendina = new JComboBox<>(opzioniMenu);
+
+        //set dimensioni desiderate
+        this.menuTendina.setPreferredSize(new Dimension(200, 40));
+
+        //set font desiderato
+        this.menuTendina.setFont(this.fontTesto);
+
+        //aggiunta menù alla finestra
+        this.addComponent(0, 1200, 700, 0, this.menuTendina);
+
+        //aggiunta evento
+        this.menuTendina.addActionListener(e -> {
+            try {
+
+                //regole
+                this.actionRules();
+
+                //abbandona partita
+                this.leftGame();
+            } catch (IOException | URISyntaxException ex) {
+                ex.printStackTrace();
+            }
+        });
+    }
+    //////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////
+
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////METODI UTILI PER LE IMMAGINI//////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+    //metodo utile a sistemare le varie immagini
+    private void setupImmagini() throws IOException {
         try {
-            // immagine del giocatore
-            imgGiocatore = ImageIO.read(new File("client/immagini/imgGiocatore.png"));
-            imgGiocatore = resizeImage(imgGiocatore, 70, 70);
-            this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
-            this.addComponent(620, 20, 0, 0, new JLabel(new ImageIcon(imgGiocatore)));
-            this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(imgGiocatore)));
 
-            //immagini delle fish
-            img20 = ImageIO.read(new File("client/immagini/20.png"));
-            img50 = ImageIO.read(new File("client/immagini/50.png"));
-            img100 = ImageIO.read(new File("client/immagini/100.png"));
+            //costruire immagini dei giocatori
+            this.setupGiocatoreImage();
 
-            img20 = resizeImage(img20, 70, 70);
-            img50 = resizeImage(img50, 110, 110);
-            img100 = resizeImage(img100, 75, 75);
+            //costruire le immagini delle fish
+            this.setupFishImages();
 
-            ventiClick = new JLabel(new ImageIcon(img20));
-            cinquantaClick = new JLabel(new ImageIcon(img50));
-            centoClick = new JLabel(new ImageIcon(img100));
-
-            cinquantaClick.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) 
-                {
-                    if(play.cinquanta>0)
-                    {
-                        puntata+=50;
-                        play.cinquanta--;
-                        //aggiornaFish();
-                    }
-                    else
-                        inserisciErrore("Hai finito queste fish", "Errore");
-
-                }
-            });
-
-            centoClick.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) 
-                {
-                    if(play.cento>0)
-                    {
-                        puntata+=100;
-                        play.cento--;
-                        //aggiornaFish();
-                    }
-                    else
-                        inserisciErrore("Hai finito queste fish", "Errore");
-
-                }
-            });
-
-            ventiClick.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) 
-                {
-                    if(play.venti>0)
-                    {
-                        puntata+=20;
-                        play.venti--;
-                        //aggiornaFish();
-                    }
-                    else
-                        inserisciErrore("Hai finito queste fish", "Errore");
-
-                }
-            });
-
-            this.addComponent(300, 1000, 0, 0, ventiClick);
-            this.addComponent(300, 1200, 0, 0, cinquantaClick);
-            this.addComponent(300, 1400, 0, 0, centoClick);
-
-            // immagine del dealer
-            imgDealer = ImageIO.read(new File("client/immagini/luigi.png"));
-            imgDealer = resizeImage(imgDealer, 289, 200);
-            
-            this.addComponent(0, 40, 630, 0, new JLabel(new ImageIcon(imgDealer)));
-            
+            //costruire immagine dealer
+            this.setupDealerImage();
         } catch (IOException e) {
-            // gestione dell'eccezione durante la lettura dell'immagine
             e.printStackTrace();
         }
+    }
+    
+    //metodo utile alla costruzione delle immagini dei giocatori
+    private void setupGiocatoreImage() throws IOException {
 
-        // impostazioni di default
-        setTitle("Casino.com");
-        add(pannelloSfondo);
-        setSize(1500, 900);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //salvataggio immagine sistemata graficalmente 
+        this.imgGiocatore = loadImageAndResize("client/immagini/imgGiocatore.png", 70, 70);
 
-        this.mostraManoIniziale();
-        this.mostraFlopIniziale();        
+        //aggiunta tutte immagini dei giocatori
+        this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(this.imgGiocatore)));
+        this.addComponent(620, 28, 0, 0, new JLabel(new ImageIcon(this.imgGiocatore)));
+        this.addComponent(60, 0, 0, 970, new JLabel(new ImageIcon(this.imgGiocatore)));
+    }
+    
+    //metodo utile alla sistemazione delle fish nella finestra
+    private void setupFishImages() throws IOException {
+
+        //creazione e sistemazione immagine fish 20
+        this.img20 = this.loadImageAndResize("client/immagini/20.png", 102, 77);
+
+        //creazione e sistemazione immagine fish 50
+        this.img50 = this.loadImageAndResize("client/immagini/50.png", 102, 77);
+
+        //creazione e sistemazione immagine fish 100
+        this.img100 = this.loadImageAndResize("client/immagini/100.png", 102, 77);
+    
+        //inizializzazione container lbl per le fish
+        this.containerFish20 = this.createFishLabel(this.img20, 20);
+        this.containerFish50 = this.createFishLabel(this.img50, 50);
+        this.containerFish100 = this.createFishLabel(this.img100, 100);
+
+        //aggiunta fish alla finestra
+        this.addComponent(400, 970, 0, 0, this.containerFish20);
+        this.addComponent(400, 1170, 0, 0, this.containerFish50);
+        this.addComponent(400, 1370, 0, 0, this.containerFish100);
+    }
+    
+    //metodo utile all'inserimento dell'immagine del dealer nella finestra
+    private void setupDealerImage() throws IOException {
+
+        //salvataggio immagine dealer e sistemazione
+        this.imgDealer = this.loadImageAndResize("client/immagini/luigi.png", 289, 200);
+
+        //aggiunta immagine dealer alla finestra
+        this.addComponent(0, 20, 630, 0, new JLabel(new ImageIcon(this.imgDealer)));
+    }
+    
+    //metodo utile a caricare e sistemare un'immagine
+    private BufferedImage loadImageAndResize(String filePath, int width, int height) throws IOException {
+
+        //salvataggio immagine
+        BufferedImage image = ImageIO.read(new File(filePath));
+
+        //ritorno immagine sistemata
+        return this.resizeImage(image, width, height);
     }
 
-    //metodo che mi permette di posizionare qualsiasi componente e di posizionarlo
-    private void addComponent(int daSu, int daSinistra, int daGiu, int daDestra, JComponent component) 
-    {
-        contenitore.gridx = 0;
-        contenitore.gridy = 1;
-        //distanze da i margini
-        contenitore.insets = new Insets(daSu, daSinistra, daGiu, daDestra);
-        pannelloSfondo.add(component, contenitore);
+    //metodo utile a scalare nel modo corretto un'immagine
+    private BufferedImage resizeImage(BufferedImage img, int larghezza, int altezza) {
+
+        //instanza per immagine
+        Image tmp = img.getScaledInstance(larghezza, altezza, Image.SCALE_SMOOTH);
+
+        //salvataggio immagine 
+        BufferedImage resizedImage = new BufferedImage(larghezza, altezza, BufferedImage.TYPE_INT_ARGB);
+
+        //creazione immagine geometricamente migliore
+        Graphics2D g2d = resizedImage.createGraphics();
+
+        //disegno immagine
+        g2d.drawImage(tmp, 0, 0, null);
+
+        //libero risorse grafiche
+        g2d.dispose();
+
+        //ritorno immagine sistemata
+        return resizedImage;
     }
 
-    private JPanel creaPannelloConSfondo() 
-    {
+    //metodo utile a sistemare l'aspetto grafico dei bottoni
+    private void sistemaBottoni(JButton b) {
+
+        //se grandezza
+        b.setPreferredSize(new Dimension(200, 50));
+
+        //set font
+        b.setFont(this.fontTesto);
+
+        //set colore background
+        b.setBackground(Color.WHITE);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////////////////////////////
+    //////////////////////METODI UTILI ALLLE FISH//////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //metodo utile alla creazione della label che conterrà le fish
+    private JLabel createFishLabel(BufferedImage image, int fishValue) {
+
+        //creazione effettiva della label
+        JLabel fishLabel = new JLabel(new ImageIcon(image));
+    
+        //aggiunta di un listener per il click del mouse
+        fishLabel.addMouseListener(new MouseAdapter() {
+            //quando il mouse viene cliccato
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                //aggiorno label
+                aggiornaFish();
+
+                //logica al click del mouse
+                handleFishClick(fishValue);
+            }
+    
+            //evidenzio l'immagine quando ci passo sopra con il mouse
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                //aggiunta bordo colorato
+                fishLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+            }
+    
+            //tolgo evidenziamento immagine quando non sono più sopra con il mouse
+            @Override
+            public void mouseExited(MouseEvent e) {
+                //rimuovi l'effetto di evidenziazione quando il mouse esce dall'area della freccetta
+                fishLabel.setBorder(null);
+            }
+    
+            //evidenzio l'immagine quando premo il tasto sinistro del mouse
+            @Override
+            public void mousePressed(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    //aggiunta bordo colorato
+                    fishLabel.setBorder(BorderFactory.createLineBorder(Color.GREEN, 4));
+                }
+            }
+    
+            //rimuovo l'effetto di evidenziazione di quando la fish è premuta
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    //aggiunta bordo colorato
+                    fishLabel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
+                }
+            }
+        });
+    
+        //ritorno la fish
+        return fishLabel;
+    }    
+    
+    //metodo utile a far funzionare nel modo corretto le fish
+    private void handleFishClick(int fishValue) {
+
+        //se è il tuo turno
+        if (this.play.isYourTurn) {
+
+            //se viene premuta la fish 20 e ho giocate disponibili
+            if (fishValue == 20 && this.play.venti > 0) {
+
+                //aumento la puntata 
+                this.puntata += 20;
+
+                //visualizzo la puntata nella label
+                this.visualizzaPuntata.setText("Puntata = " + this.puntata);
+
+                //aggiorno label
+                this.aggiornaFish();
+
+                //diminuisco le giocate disponibili
+                this.play.venti--;
+            } 
+            //se viene premuta la fish 50 e ho giocate disponibili
+            else if (fishValue == 50 && this.play.cinquanta > 0) {
+
+                //aumento la puntata
+                this.puntata += 50;
+
+                //visualizzo la puntata nella label
+                this.visualizzaPuntata.setText("Puntata = " + this.puntata);
+
+                //aggiorno label
+                this.aggiornaFish();
+
+                //diminuisco le giocate disponibili
+                this.play.cinquanta--;
+            } 
+            //se viene premuta la fish 100 e ho giocate disponibili
+            else if (fishValue == 100 && this.play.cento > 0) {
+
+                //aumento la puntata
+                this.puntata += 100;
+
+                //visualizzo la puntata nella label
+                this.visualizzaPuntata.setText("Puntata = " + this.puntata);
+
+                //aggiorno label
+                this.aggiornaFish();
+
+                //diminuisco le giocate disponibili
+                this.play.cento--;
+            } 
+            else {
+                //inserimento errore
+                this.inserisciErrore("Hai finito queste fish", "Errore");
+            }
+        }
+    }
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////MESSAGGI//////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////
+    //metodo utile a mostrare un messaggio di errore
+    public void inserisciErrore(String message, String title) {
+        //dimostrazione effettiva
+        JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    //metodo utile a mostrare un'informazione
+    public void inserisciMex(String message, String title) {
+        //dimostrazione effettiva
+        JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+    }
+    ////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////
+
+    ///////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////LOGICA////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////// 
+    //metodo utile a farti abbandonare la partita   
+    private void leftGame() throws IOException, URISyntaxException {
+
+        //se viene premuta l'abbandona partita
+        if (this.menuTendina.getSelectedItem().equals("Abbandona partita")) {
+
+            //nascondo finestra
+            this.setVisible(false);
+
+            //dico al server che ho abbandonato la partita
+            this.communication.output("abbandonaPartita");
+
+            //termino connessione con il server
+            this.communication.terminateConnection();
+        }
+    }
+
+    //metodo utile a mostrare la mano del giocatore
+    public void mostraManoGiocatore() throws IOException {
+        
+        //percorso file carta
+        String percorsoCarta = "";
+
+        //scorro il vettore di cartee
+        for (int i = 0; i < this.listaCarteGiocatore.size(); i++) {
+            //trovo il percorso file utile
+            percorsoCarta = this.listaCarteGiocatore.lista.get(i).getNumero() + this.listaCarteGiocatore.lista.get(i).getSeme() + ".png";
+
+            //salvataggio immagine 
+            this.imgcarta = ImageIO.read(new File("client/immagini/carte/" + percorsoCarta));
+
+            //sistemazione carta
+            this.imgcarta = resizeImage(this.imgcarta, 80, 100);
+
+            //aggiunta carte alla finestra
+            if (i == 1)
+                this.addComponent(167, 0, 0, 80, new JLabel(new ImageIcon(this.imgcarta)));
+            else
+                this.addComponent(167, 120, 0, 0, new JLabel(new ImageIcon(this.imgcarta)));
+        }
+    }
+
+    //metodo utile a mostrare la flop sul banco da gioco
+    public void mostraFlopSulBanco() throws IOException {
+
+        //percorso scart
+        String percorsoCarta = "client/immagini/carte/";
+
+        //scorro la lista della flop
+        for (int i = 0; i < this.flop.size(); i++) {
+
+            //prendo carta temporanea da visualizzare
+            carta currentCarta = this.flop.lista.get(i);
+
+            //salvo il percorso file generale
+            String percorsoCompleto = percorsoCarta + currentCarta.getNumero() + currentCarta.getSeme() + ".png";
+
+            try {
+                //salvo immagini delle carte
+                BufferedImage imgCarta = ImageIO.read(new File(percorsoCompleto));
+
+                //le sistemo
+                imgCarta = this.resizeImage(imgCarta, 80, 100);
+
+                //inserimento in una label
+                JLabel labelCarta = new JLabel(new ImageIcon(imgCarta));
+
+                //aggiunta carte flop sul banco da gioco
+                if (i == 1)
+                    this.addComponent(0, 0, 83, 80, labelCarta);
+                else if (i == 2)
+                    this.addComponent(0, 120, 83, 0, labelCarta);
+                else if (i == 3)
+                    this.addComponent(0, 320, 83, 0, labelCarta);
+                else
+                    this.addComponent(0, 0, 83, 280, labelCarta);
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //metodo utile ad aggiornare le fish
+    public void aggiornaFish() {
+
+        //imposta colore scritte bianche
+        this.visualizzaPuntata.setForeground(Color.WHITE);
+
+        //set font 
+        Font fontPuntata = new Font("Arial Black", Font.PLAIN, 41);
+        this.visualizzaPuntata.setFont(fontPuntata);
+
+        //aggiunta scritta 
+        this.addComponent(670, 0, 0, 1000, this.visualizzaPuntata);
+    }
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////////////////////////////
+    ///////////////////////////METODI GENERALI UTILI///////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////// 
+    //metodo utile ad aggiungere elementi alla finestra
+    private void addComponent(int daSu, int daSinistra, int daGiu, int daDestra, JComponent component) {
+        this.contenitore.gridx = 0;
+        this.contenitore.gridy = 1;
+        this.contenitore.insets = new Insets(daSu, daSinistra, daGiu, daDestra);
+        this.pannelloSfondo.add(component, this.contenitore);
+    }
+
+    //metodo per creare la finestra con lo sfondo
+    private JPanel creaPannelloConSfondo() {
         return new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -302,121 +682,22 @@ public class guiGame extends JFrame
         };
     }
 
-    private void disegnaSfondo(Graphics g) 
-    {
-        if (immagineSfondo != null)
+    //metodo utile a disegnare lo sfondo
+    private void disegnaSfondo(Graphics g) {
+        if (this.immagineSfondo != null)
             g.drawImage(immagineSfondo, 0, 0, getWidth(), getHeight(), this);
     }
 
-    private void actionRules() throws IOException, URISyntaxException 
-    {
-        if ("Regolamento".equals(menuTendina.getSelectedItem())) 
-            exploreUrl("https://poker.md/it/how-to-play-poker/");
+    //metodo utile al menu a tendina
+    private void actionRules() throws IOException, URISyntaxException {
+        if ("Regolamento".equals(this.menuTendina.getSelectedItem()))
+            this.exploreUrl("https://poker.md/it/how-to-play-poker/");
     }
 
-    private void exploreUrl(String url) throws IOException, URISyntaxException 
-    {
+    //metodo utile ad aprire il link del regolamento
+    private void exploreUrl(String url) throws IOException, URISyntaxException {
         Desktop.getDesktop().browse(new URI(url));
     }
-
-    private void leftGame() throws IOException, URISyntaxException 
-    {
-        if (menuTendina.getSelectedItem().equals("Abbandona partita"))
-        {
-            setVisible(false);
-            communication.output("abbandonaPartita");
-            communication.terminateConnection();
-        } 
-    }
-
-    //metodo che ridimensiona un'immagine
-    private BufferedImage resizeImage(BufferedImage img, int larghezza, int altezza) 
-    {
-        //creo un'immagine temporanea con le nuove dimensioni
-        Image tmp = img.getScaledInstance(larghezza, altezza, Image.SCALE_SMOOTH);   
-        BufferedImage resizedImage = new BufferedImage(larghezza, altezza, BufferedImage.TYPE_INT_ARGB);
-
-        Graphics2D g2d = resizedImage.createGraphics();
-        g2d.drawImage(tmp, 0, 0, null);
-        g2d.dispose();
-
-        return resizedImage;
-    }
-
-    public void inserisciErrore(String message, String title) 
-    {
-        JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
-    }
-
-    public void inserisciMex(String message, String title) 
-    {
-        JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
-    }
-
-
-    //metodo per visualizzare nel modo corretto la mano del giocatore
-    public void mostraManoIniziale() throws IOException
-    {
-        //percorso file della carta
-        String percorsoCarta = "";
-
-        //scorro la mano
-        for(int i= 0; i<this.carte.size(); i++)
-        {
-            //salvo il percorso file per ottenere l'immagine corretta 
-            percorsoCarta = carte.lista.get(i).getNumero() + carte.lista.get(i).getSeme() + ".png";
-
-            //trovo l'immagine dalla giusta cartella
-            imgcarta = ImageIO.read(new File("client/immagini/carte/" + percorsoCarta));
-
-            //imposto la corretta dimensione
-            imgcarta = resizeImage(imgcarta, 80, 100);
-            
-            //inserimento nel modo corretto delle carte nelle apposite label
-            if(i == 1)
-                this.addComponent(250, 0, 0, 100, new JLabel(new ImageIcon(imgcarta)));
-            else
-                this.addComponent(250, 100, 0, 0, new JLabel(new ImageIcon(imgcarta)));
-
-        }
-    }
-
-    public void mostraFlopIniziale() throws IOException
-    {
-        String percorsoCarta = "client/immagini/carte/";
-
-        for (int i = 0; i < this.flop.size(); i++) {
-            carta currentCarta = this.flop.lista.get(i);
-
-            String percorsoCompleto = percorsoCarta + currentCarta.getNumero() + currentCarta.getSeme() + ".png";
-
-            try {
-                BufferedImage imgCarta = ImageIO.read(new File(percorsoCompleto));
-
-                imgCarta = resizeImage(imgCarta, 80, 100);
-
-                JLabel labelCarta = new JLabel(new ImageIcon(imgCarta));
-                if (i == 1)
-                    this.addComponent(0, 0, 0, 100, labelCarta);
-                else if (i == 2)
-                    this.addComponent(0, 100, 0, 0, labelCarta);
-                else if (i == 3)
-                    this.addComponent(0, 300, 0, 0, labelCarta);
-                else
-                    this.addComponent(0, 0, 0, 300, labelCarta);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void aggiornaFish()
-    {
-        visualizzaPuntata.setForeground(Color.WHITE);
-        visualizzaPuntata.setFont(fontTesto);
-
-        this.addComponent(1000, 0, 0, 0, visualizzaPuntata);
-    }
+    //////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////
 }
-

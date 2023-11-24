@@ -18,35 +18,29 @@ public class guiStart extends JFrame {
     public guiGame game;
 
     public guiStart() throws IOException {
-        // sfondo
+        //sfondo
         immagineSfondo = ImageIO.read(new File("client/immagini/sfondoStart.jpg"));
+        //crea sfondo
         pannelloSfondo = creaPannelloConSfondo();
+        //crea contenitore
         contenitore = new GridBagConstraints();
+        //set layout a griglia
         pannelloSfondo.setLayout(new GridBagLayout());
 
 
-        // bottone di inizio
+        //bottone di inizio
         start = new JButton("Unisciti alla partita");
+        //set dimensione
         start.setPreferredSize(new Dimension(200, 50));
+        //set font
         start.setFont(new Font("Arial", Font.PLAIN, 20));
+        //set colore scritta
+        start.setForeground(new Color(184, 134, 11));
 
+        //aggiunta elemento alla finestra
+        this.addComponent(350, 20, 0, 0, start);
 
-        Timer colorTimer = new Timer(100, new ActionListener() {
-            float hue = 0; 
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hue = (hue + 0.01f) % 1.0f;
-                Color newColor = Color.getHSBColor(hue, 1, 1);
-                start.setForeground(newColor);
-            }
-        });
-
-        colorTimer.start();
-
-        this.addComponent(770, 20, 0, 0, start);
-
-
+        //quando premi sul bottone
         start.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,6 +49,7 @@ public class guiStart extends JFrame {
                     communication = new comunicazione();
                     communication.output("client");
 
+                    //ricezione, salvataggio carte
                     String stringa;
                     String[] carteRicevute;
                     carte listacarte = new carte();
@@ -82,6 +77,7 @@ public class guiStart extends JFrame {
                         listacarte.addCarta(c);
                     }
 
+                    //ricezione e salvataggio flop banco
                     stringa = communication.input();
                     String[] carteFlop = stringa.split("/");
                     String[] cartaRicevuta;
@@ -105,7 +101,7 @@ public class guiStart extends JFrame {
                     // Nascondo la finestra di avvio partita
                     setVisible(false);
                     
-                    game.play.riceviTurno();
+                    game.play.aspettaInformazioniDalServer();
 
                     // Inizio il gioco
                     game.isClose = false;
@@ -117,7 +113,7 @@ public class guiStart extends JFrame {
                         game.inserisciMex("E' il tuo turno!", "ENTRA");
                     else{
                         game.inserisciErrore("Non è il tuo turno!", "NON PUOI ENTRARE");
-                        game.play.riceviTurno();
+                        game.play.aspettaInformazioniDalServer();
                     }
 
                 } catch (IOException e1) {
@@ -135,7 +131,7 @@ public class guiStart extends JFrame {
         // impostazioni di default
         setTitle("Casino.com");
         add(pannelloSfondo);
-        setSize(1500, 900);
+        setSize(1000, 600);
         // chiudo la finestra e chiudo anche il "programma"
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
