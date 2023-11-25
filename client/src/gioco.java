@@ -25,39 +25,39 @@ public class gioco
     {
         //se ho gia passato non permetto di scommetere in quanto si è gia passato 
         //il turno ed evito anche di mandare continui messaggi al server
-        if(!game.isPassato && !game.isScommesso)
+        if(!this.game.isPassato && !this.game.isScommesso)
         {
             System.out.println("scommetto");
-            game.communication.output("scommetti/" + puntata);
-            game.play.aspettaInformazioniDalServer();
-            game.isScommesso = true; 
+            this.game.communication.output("scommetti/" + puntata);
+            this.game.play.aspettaInformazioniDalServer();
+            this.game.isScommesso = true; 
 
             //aggiorna valore della puntata
-            game.aggiornaFish(); 
+            this.game.aggiornaFish(); 
         }
         else
-            game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
+            this.game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
     }
 
     //metodo che mi permette di passare 
     public void passa() throws IOException
     {
         //se ho passato non posso scommettere ne ripassare 
-        if(!game.isScommesso && !game.isPassato)
+        if(!this.game.isScommesso && !this.game.isPassato)
         {
             System.out.println("passo");
-            game.communication.output("passa/0");
-            game.play.aspettaInformazioniDalServer();
-            game.isPassato = true;  
+            this.game.communication.output("passa/0");
+            this.game.play.aspettaInformazioniDalServer();
+            this.game.isPassato = true;  
         }
         else
-            game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
+            this.game.inserisciErrore("Non puoi passare se hai scommesso!", "Errore");
     }
 
     //controllo se è il mio turno
     public void aspettaInformazioniDalServer() throws IOException
     {
-        String messRicevuto = game.communication.input();
+        String messRicevuto = this.game.communication.input();
         System.out.println(messRicevuto);
 
         //se il messaggio è true vuol dire che è il tuo turno e puoi giocare
@@ -75,16 +75,24 @@ public class gioco
         //se si riceve la somma di vittoria
         String[] tmp = messRicevuto.split("/");
         if(tmp[2].equals("true"))
-            game.inserisciMex("HAI VINTO " + tmp[1] + " COIN", "HAI VINTO!!!");
+        {
+            this.game.inserisciMex("HAI VINTO " + tmp[1] + " COIN", "HAI VINTO!!!");
+            this.svuotaCarteTurno();
+            this.game.nuovoRound();
+        }
         else
+        {
             game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
+            this.svuotaCarteTurno();
+            this.game.nuovoRound();
+        }
 
     }
 
     //metodo utile a svuotare le carte per ricevere quelle nuove
     public void svuotaCarteTurno()
     {
-        game.listaCarteGiocatore.svuotaCarte();
-        game.flop.svuotaCarte();
+        this.game.listaCarteGiocatore.svuotaCarte();
+        this.game.flop.svuotaCarte();
     }
 }

@@ -119,6 +119,27 @@ public class guiGame extends JFrame {
         this.mostraFlopSulBanco();
     }
 
+    //metodo utile a iniziare un nuovo round
+    public void nuovoRound() throws IOException
+    {
+        this.isScommesso = false;
+        this.isPassato = false;
+        this.isAbbandonato = false;
+        this.isOver = false;
+    
+        this.riceviCarteMano();
+        this.riceviCarteFlop();
+
+        this.play.aspettaInformazioniDalServer();
+
+        //metodo per mostrare la mano del giocatore
+        this.mostraManoGiocatore();
+
+        //metodo per mostrare la flop sul bancone
+        this.mostraFlopSulBanco();
+
+    }
+
     //metodo contenente altri metodi per sistemare e inizializzare per intero la finestra di gioco
     private void initUI() throws IOException
     {
@@ -572,8 +593,7 @@ public class guiGame extends JFrame {
             //dico al server che ho abbandonato la partita
             this.communication.output("abbandonaPartita");
 
-            //termino connessione con il server
-            this.communication.terminateConnection();
+            //la connessione verrà terminata dal server
         }
     }
 
@@ -640,6 +660,54 @@ public class guiGame extends JFrame {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void riceviCarteMano() throws IOException
+    {
+        String stringa;
+        String[] carteRicevute;
+        carta c;
+
+        for (int i = 0; i < 2; i++) 
+        {
+            // ricevo in input la linea
+            stringa = communication.input();
+
+            // splitto il vettore
+            carteRicevute = stringa.split(";");
+
+            // se la carta è scoperta
+            if (carteRicevute[2].equals("true")) {
+                // inizializzo l'oggetto carta con le informazioni utili
+                c = new carta(carteRicevute[0], carteRicevute[1], true);
+            } else {
+                c = new carta(carteRicevute[0], carteRicevute[1], false);
+            }
+
+            // aggiunta della carta nella mano del giocatore
+            this.listaCarteGiocatore.addCarta(c);
+        }
+    }
+
+    public void riceviCarteFlop() throws IOException
+    {
+        String stringa;
+        carta c;
+        stringa = communication.input();
+        String[] carteFlop = stringa.split("/");
+        String[] cartaRicevuta;
+
+        // creazione oggetto mano del giocatore
+        // inserimento carte nella mano del giocatore
+        for (int i = 0; i < 4; i++) {
+            cartaRicevuta = carteFlop[i].split(";");
+            System.out.println(carteFlop[i]);
+
+            // inizializzo l'oggetto carta con le informazioni utili
+            c = new carta(cartaRicevuta[0], cartaRicevuta[1], true);
+
+            this.flop.addCarta(c);
         }
     }
 
