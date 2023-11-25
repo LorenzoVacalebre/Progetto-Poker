@@ -558,6 +558,7 @@ public class Gioco {
         //salvo la socket del vincitore per mandargli la vincita
         Socket socketVincitore = this.trovaVincitore();
 
+        //aggiungo al giocatore vincitore il piatto
         return socketVincitore;
     }
 
@@ -565,11 +566,13 @@ public class Gioco {
     public void eseguiMano() throws IOException
     {
         String[] tmp = this.funzioneRichiesta.split("/");
+
         //che funzione ha richiesto il client?
         switch(tmp[0])
         {
             //passare il round(non verrà più preso in causa fino alla fine del roundo)
             case "passa":
+
                 //inserimento carte scartate nel mazzo corretto
                 this.mazzoCarteScartate.pushMano(this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getManoGiocatore());
 
@@ -593,6 +596,22 @@ public class Gioco {
                 //System.out.println(tmp[1]);
 
                 break;
+
+            //se un client ha chiesto di abbandonare la partita    
+            case "abbandonaPartita":
+
+                //chiudo la socket del giocatore
+                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getSocket().close();
+
+                //elimino il giocatore dalla lista
+                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).setStatusPresenza(false);
+
+                //inserisco la mano del giocatore nel mazzo delle carte scartate
+                this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getManoGiocatore().svuotaMano(this.mazzoCarteScartate);
+
+                //elimino il giocatore dalla lista
+                this.listaGiocatori.pull(posGiocatoreEffRic);
+
             default:
                 break;
         }

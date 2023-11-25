@@ -591,9 +591,8 @@ public class guiGame extends JFrame {
             this.setVisible(false);
 
             //dico al server che ho abbandonato la partita
-            this.communication.output("abbandonaPartita");
+            this.communication.output("abbandonaPartita/0");
 
-            //la connessione verrà terminata dal server
         }
     }
 
@@ -707,6 +706,7 @@ public class guiGame extends JFrame {
             // inizializzo l'oggetto carta con le informazioni utili
             c = new carta(cartaRicevuta[0], cartaRicevuta[1], true);
 
+            // aggiunta della carta nella mano del giocatore
             this.flop.addCarta(c);
         }
     }

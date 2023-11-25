@@ -93,5 +93,12 @@ public class GestioneGiocatori {
                 this.listaGiocatori.remove(i);
         }
     }
+
+    //metodo per eliminare un giocatore dalla partita
+    public void pull(int pos)
+    {
+        //scorro lista
+        this.listaGiocatori.remove(pos);
+    }
 }
 

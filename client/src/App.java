@@ -6,6 +6,7 @@ public class App {
     {
         //creo le due gui e visualizzo le carte passate direttamente nella guigame
         start = new guiStart();
+
     }
 
 }
