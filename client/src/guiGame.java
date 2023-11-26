@@ -71,7 +71,7 @@ public class guiGame extends JFrame {
     private JButton passa;
     //////////////////////////
         
-    //punatata
+    //puntata
     public int puntata;
 
     //font generale del testo
@@ -82,44 +82,6 @@ public class guiGame extends JFrame {
     public gioco play;
     public carte listaCarteGiocatore;
     public carte flop;
-
-    public guiGame(int puntata, carte listaCarteGiocatore, carte flop, comunicazione communication) throws IOException
-    {
-        this.communication = communication;
-        this.play = new gioco(this);
-        this.listaCarteGiocatore = listaCarteGiocatore;
-        this.flop = flop;
-        this.isClose = true;
-        this.isScommesso = false;
-        this.isAbbandonato = false;
-        this.isOver = false;
-        this.puntata = puntata;
-        this.fontTesto = new Font("Arial", Font.PLAIN, 20);
-        this.visualizzaPuntata = new JLabel("Puntata = " + this.puntata);
-
-        //metodo che inizializza tutta l'interfaccia grafica del gioco
-        this.initUI();
-
-        //imposta titolo
-        this.setTitle("Casino.com");
-
-        //add pannello sfondo
-        this.add(this.pannelloSfondo);
-
-        //set grandezza finestra da gioco
-        this.setSize(1500, 900);
-
-        //se l'utente chiude la finestra principale, il programma termina
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        //metodo per mostrare la mano del giocatore
-        this.mostraManoGiocatore();
-
-        //metodo per mostrare la flop sul bancone
-        this.mostraFlopSulBanco();
-    }
-
-
 
     //costruttore con parametri
     public guiGame(comunicazione communication, carte listaCarteGiocatore, carte flop) throws IOException {
@@ -161,7 +123,7 @@ public class guiGame extends JFrame {
     public void nuovoRound() throws IOException
     {
         guiGame game = null;
-
+        
         //ricezione, salvataggio carte
         String stringa;
         String[] carteRicevute;
@@ -209,7 +171,7 @@ public class guiGame extends JFrame {
         }
 
         // creo la partita
-        game = new guiGame(this.puntata, listacarte, flop, this.communication);
+        game = new guiGame(this.communication, listacarte, flop);
 
         // Nascondo la finestra di avvio partita
         setVisible(false);
@@ -332,7 +294,7 @@ public class guiGame extends JFrame {
             this.play.scommetti(this.puntata);
 
             //attesa per ricevere delle informazioni dal server
-            this.play.aspettaInformazioniDalServer();
+            //this.play.aspettaInformazioniDalServer();
 
             //attesa per ricevere delle informazioni dal server
             this.play.aspettaInformazioniDalServer();
@@ -360,7 +322,7 @@ public class guiGame extends JFrame {
             this.play.passa();
 
             //attesa per ricevere delle informazioni dal server
-            this.play.aspettaInformazioniDalServer();
+            //this.play.aspettaInformazioniDalServer();
 
             //attesa per ricevere delle informazioni dal server
             this.play.aspettaInformazioniDalServer();
@@ -606,7 +568,7 @@ public class guiGame extends JFrame {
                 this.visualizzaPuntata.setText("Puntata = " + this.puntata);
 
                 //aggiorno label
-                this.aggiornaFish();
+                //this.aggiornaFish();
 
                 //diminuisco le giocate disponibili
                 this.play.venti--;
@@ -621,7 +583,7 @@ public class guiGame extends JFrame {
                 this.visualizzaPuntata.setText("Puntata = " + this.puntata);
 
                 //aggiorno label
-                this.aggiornaFish();
+                //this.aggiornaFish();
 
                 //diminuisco le giocate disponibili
                 this.play.cinquanta--;
@@ -636,7 +598,7 @@ public class guiGame extends JFrame {
                 this.visualizzaPuntata.setText("Puntata = " + this.puntata);
 
                 //aggiorno label
-                this.aggiornaFish();
+                //this.aggiornaFish();
 
                 //diminuisco le giocate disponibili
                 this.play.cento--;
@@ -749,57 +711,6 @@ public class guiGame extends JFrame {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    public void riceviCarteMano() throws IOException
-    {
-        String stringa;
-        String[] carteRicevute;
-        carta c;
-
-        for (int i = 0; i < 2; i++) 
-        {
-            // ricevo in input la linea
-            stringa = communication.input();
-
-            System.out.println(stringa);
-
-            // splitto il vettore
-            carteRicevute = stringa.split(";");
-
-            // se la carta è scoperta
-            if (carteRicevute[2].equals("true")) {
-                // inizializzo l'oggetto carta con le informazioni utili
-                c = new carta(carteRicevute[0], carteRicevute[1], true);
-            } else {
-                c = new carta(carteRicevute[0], carteRicevute[1], false);
-            }
-
-            // aggiunta della carta nella mano del giocatore
-            this.listaCarteGiocatore.addCarta(c);
-        }
-    }
-
-    public void riceviCarteFlop() throws IOException
-    {
-        String stringa;
-        carta c;
-        stringa = communication.input();
-        String[] carteFlop = stringa.split("/");
-        String[] cartaRicevuta;
-
-        // creazione oggetto mano del giocatore
-        // inserimento carte nella mano del giocatore
-        for (int i = 0; i < 4; i++) {
-            cartaRicevuta = carteFlop[i].split(";");
-            System.out.println(carteFlop[i]);
-
-            // inizializzo l'oggetto carta con le informazioni utili
-            c = new carta(cartaRicevuta[0], cartaRicevuta[1], true);
-
-            // aggiunta della carta nella mano del giocatore
-            this.flop.addCarta(c);
         }
     }
 

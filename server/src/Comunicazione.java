@@ -178,6 +178,9 @@ public class Comunicazione {
             //invio ai vari giocatori se hanno vinto o no la partita
             this.inviaInfoATutti(s);
 
+            //resetto le puntate
+            this.gioco.resettaPuntate();
+
             //"spengo" il gioco
             this.gioco.setStatusFalse();   
             

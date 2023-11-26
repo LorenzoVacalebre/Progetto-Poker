@@ -29,11 +29,7 @@ public class gioco
         {
             System.out.println("scommetto");
             this.game.communication.output("scommetti/" + puntata);
-            this.game.play.aspettaInformazioniDalServer();
             this.game.isScommesso = true; 
-
-            //aggiorna valore della puntata
-            this.game.aggiornaFish(); 
         }
         else
             this.game.inserisciErrore("Non puoi scommettere se hai passato!", "Errore");
@@ -47,7 +43,6 @@ public class gioco
         {
             System.out.println("passo");
             this.game.communication.output("passa/0");
-            this.game.play.aspettaInformazioniDalServer();
             this.game.isPassato = true;  
         }
         else
@@ -79,12 +74,14 @@ public class gioco
                 this.game.inserisciMex("HAI VINTO " + tmp[1] + " COIN", "HAI VINTO!!!");
                 this.svuotaCarteTurno();
                 this.game.nuovoRound();
+                return;
             }
             else
             {
                 game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
                 this.svuotaCarteTurno();
                 this.game.nuovoRound();
+                return;
             }
             
         }

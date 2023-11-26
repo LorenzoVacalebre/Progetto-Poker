@@ -592,9 +592,7 @@ public class Gioco {
                 
                 //aggiunta scommessa giocatore al piatto
                 this.scommessaTotale += this.listaGiocatori.getGiocatore(this.posGiocatoreEffRic).getPuntata();
-
-                //System.out.println(tmp[1]);
-
+                
                 break;
 
             //se un client ha chiesto di abbandonare la partita    
@@ -615,5 +613,14 @@ public class Gioco {
             default:
                 break;
         }
+    }
+
+    //metodo utile a resettare le puntate dei giocatori
+    public void resettaPuntate()
+    {
+        for(int i = 0; i < this.listaGiocatori.size(); i++)
+            this.listaGiocatori.getGiocatore(i).resettaPuntata();
+
+        this.scommessaTotale = 0;
     }
 }

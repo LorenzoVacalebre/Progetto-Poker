@@ -76,4 +76,11 @@ public class Giocatore {
     {
         return this.puntata;
     }
+
+    //metodo per resettare la puntata
+    public void resettaPuntata()
+    {
+        this.puntata = 0;
+    }
+
 }
