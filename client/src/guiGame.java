@@ -83,6 +83,44 @@ public class guiGame extends JFrame {
     public carte listaCarteGiocatore;
     public carte flop;
 
+    public guiGame(int puntata, carte listaCarteGiocatore, carte flop, comunicazione communication) throws IOException
+    {
+        this.communication = communication;
+        this.play = new gioco(this);
+        this.listaCarteGiocatore = listaCarteGiocatore;
+        this.flop = flop;
+        this.isClose = true;
+        this.isScommesso = false;
+        this.isAbbandonato = false;
+        this.isOver = false;
+        this.puntata = puntata;
+        this.fontTesto = new Font("Arial", Font.PLAIN, 20);
+        this.visualizzaPuntata = new JLabel("Puntata = " + this.puntata);
+
+        //metodo che inizializza tutta l'interfaccia grafica del gioco
+        this.initUI();
+
+        //imposta titolo
+        this.setTitle("Casino.com");
+
+        //add pannello sfondo
+        this.add(this.pannelloSfondo);
+
+        //set grandezza finestra da gioco
+        this.setSize(1500, 900);
+
+        //se l'utente chiude la finestra principale, il programma termina
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        //metodo per mostrare la mano del giocatore
+        this.mostraManoGiocatore();
+
+        //metodo per mostrare la flop sul bancone
+        this.mostraFlopSulBanco();
+    }
+
+
+
     //costruttore con parametri
     public guiGame(comunicazione communication, carte listaCarteGiocatore, carte flop) throws IOException {
         this.communication = communication;
@@ -122,22 +160,74 @@ public class guiGame extends JFrame {
     //metodo utile a iniziare un nuovo round
     public void nuovoRound() throws IOException
     {
-        this.isScommesso = false;
-        this.isPassato = false;
-        this.isAbbandonato = false;
-        this.isOver = false;
-    
-        this.riceviCarteMano();
-        this.riceviCarteFlop();
+        guiGame game = null;
 
-        this.play.aspettaInformazioniDalServer();
+        //ricezione, salvataggio carte
+        String stringa;
+        String[] carteRicevute;
+        carte listacarte = new carte();
+        carta c;
 
-        //metodo per mostrare la mano del giocatore
-        this.mostraManoGiocatore();
+        for (int i = 0; i < 2; i++) {
+            // ricevo in input la linea
+            stringa = communication.input();
 
-        //metodo per mostrare la flop sul bancone
-        this.mostraFlopSulBanco();
+            // stampo la carta ricevuta (non utile)
+            System.out.println(stringa);
 
+            // splitto il vettore
+            carteRicevute = stringa.split(";");
+
+            // se la carta è scoperta
+            if (carteRicevute[2].equals("true")) {
+                // inizializzo l'oggetto carta con le informazioni utili
+                c = new carta(carteRicevute[0], carteRicevute[1], true);
+            } else {
+                c = new carta(carteRicevute[0], carteRicevute[1], false);
+            }
+
+            // aggiunta della carta nella mano del giocatore
+            listacarte.addCarta(c);
+        }
+
+        //ricezione e salvataggio flop banco
+        stringa = communication.input();
+        String[] carteFlop = stringa.split("/");
+        String[] cartaRicevuta;
+
+        // creazione oggetto mano del giocatore
+        carte flop = new carte();
+        // inserimento carte nella mano del giocatore
+        for (int i = 0; i < 4; i++) {
+            cartaRicevuta = carteFlop[i].split(";");
+            System.out.println(carteFlop[i]);
+
+            // inizializzo l'oggetto carta con le informazioni utili
+            c = new carta(cartaRicevuta[0], cartaRicevuta[1], true);
+
+            flop.addCarta(c);
+        }
+
+        // creo la partita
+        game = new guiGame(this.puntata, listacarte, flop, this.communication);
+
+        // Nascondo la finestra di avvio partita
+        setVisible(false);
+        
+        game.play.aspettaInformazioniDalServer();
+
+        // Inizio il gioco
+        game.isClose = false;
+
+        // Visualizzo la finestra del gioco con le carte
+        game.setVisible(true);
+
+       if(game.play.isYourTurn)
+           game.inserisciMex("E' il tuo turno!", "ENTRA");
+       else{
+           game.inserisciErrore("Non è il tuo turno!", "NON PUOI ENTRARE");
+           game.play.aspettaInformazioniDalServer();
+       }
     }
 
     //metodo contenente altri metodi per sistemare e inizializzare per intero la finestra di gioco
@@ -672,6 +762,8 @@ public class guiGame extends JFrame {
         {
             // ricevo in input la linea
             stringa = communication.input();
+
+            System.out.println(stringa);
 
             // splitto il vettore
             carteRicevute = stringa.split(";");

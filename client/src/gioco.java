@@ -64,27 +64,29 @@ public class gioco
         if(messRicevuto.equals("true"))
         {
             this.isYourTurn = true;
-            return;
         }
         else if(messRicevuto.equals("false"))
         {
             this.isYourTurn = false;
-            return;
         }
 
-        //se si riceve la somma di vittoria
         String[] tmp = messRicevuto.split("/");
-        if(tmp[2].equals("true"))
-        {
-            this.game.inserisciMex("HAI VINTO " + tmp[1] + " COIN", "HAI VINTO!!!");
-            this.svuotaCarteTurno();
-            this.game.nuovoRound();
-        }
-        else
-        {
-            game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
-            this.svuotaCarteTurno();
-            this.game.nuovoRound();
+
+        if(tmp.length > 1){
+
+            if(tmp[2].equals("true"))
+            {
+                this.game.inserisciMex("HAI VINTO " + tmp[1] + " COIN", "HAI VINTO!!!");
+                this.svuotaCarteTurno();
+                this.game.nuovoRound();
+            }
+            else
+            {
+                game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
+                this.svuotaCarteTurno();
+                this.game.nuovoRound();
+            }
+            
         }
 
     }
