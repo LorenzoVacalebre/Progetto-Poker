@@ -218,7 +218,7 @@ public class guiGame extends JFrame {
     private void setupBackground() throws IOException {
         try {
             //lettura percorso file e salvataggio immagine
-            this.immagineSfondo = ImageIO.read(new File("client/immagini/tavolo.jpg"));
+            this.immagineSfondo = ImageIO.read(new File("immagini/tavolo.jpg"));
         } 
         catch (IOException e) 
         {
@@ -403,7 +403,7 @@ public class guiGame extends JFrame {
     private void setupGiocatoreImage() throws IOException {
 
         //salvataggio immagine sistemata graficalmente 
-        this.imgGiocatore = loadImageAndResize("client/immagini/imgGiocatore.png", 70, 70);
+        this.imgGiocatore = loadImageAndResize("immagini/imgGiocatore.png", 70, 70);
 
         //aggiunta tutte immagini dei giocatori
         this.addComponent(60, 1000, 0, 0, new JLabel(new ImageIcon(this.imgGiocatore)));
@@ -415,13 +415,13 @@ public class guiGame extends JFrame {
     private void setupFishImages() throws IOException {
 
         //creazione e sistemazione immagine fish 20
-        this.img20 = this.loadImageAndResize("client/immagini/20.png", 102, 77);
+        this.img20 = this.loadImageAndResize("immagini/20.png", 102, 77);
 
         //creazione e sistemazione immagine fish 50
-        this.img50 = this.loadImageAndResize("client/immagini/50.png", 102, 77);
+        this.img50 = this.loadImageAndResize("immagini/50.png", 102, 77);
 
         //creazione e sistemazione immagine fish 100
-        this.img100 = this.loadImageAndResize("client/immagini/100.png", 102, 77);
+        this.img100 = this.loadImageAndResize("immagini/100.png", 102, 77);
     
         //inizializzazione container lbl per le fish
         this.containerFish20 = this.createFishLabel(this.img20, 20);
@@ -438,7 +438,7 @@ public class guiGame extends JFrame {
     private void setupDealerImage() throws IOException {
 
         //salvataggio immagine dealer e sistemazione
-        this.imgDealer = this.loadImageAndResize("client/immagini/luigi.png", 289, 200);
+        this.imgDealer = this.loadImageAndResize("immagini/luigi.png", 289, 200);
 
         //aggiunta immagine dealer alla finestra
         this.addComponent(0, 20, 630, 0, new JLabel(new ImageIcon(this.imgDealer)));
@@ -660,7 +660,7 @@ public class guiGame extends JFrame {
             percorsoCarta = this.listaCarteGiocatore.lista.get(i).getNumero() + this.listaCarteGiocatore.lista.get(i).getSeme() + ".png";
 
             //salvataggio immagine 
-            this.imgcarta = ImageIO.read(new File("client/immagini/carte/" + percorsoCarta));
+            this.imgcarta = ImageIO.read(new File("immagini/carte/" + percorsoCarta));
 
             //sistemazione carta
             this.imgcarta = resizeImage(this.imgcarta, 80, 100);
@@ -677,7 +677,7 @@ public class guiGame extends JFrame {
     public void mostraFlopSulBanco() throws IOException {
 
         //percorso scart
-        String percorsoCarta = "client/immagini/carte/";
+        String percorsoCarta = "immagini/carte/";
 
         //scorro la lista della flop
         for (int i = 0; i < this.flop.size(); i++) {

@@ -19,7 +19,7 @@ public class guiStart extends JFrame {
 
     public guiStart() throws IOException {
         //sfondo
-        immagineSfondo = ImageIO.read(new File("client/immagini/sfondoStart.jpg"));
+        immagineSfondo = ImageIO.read(new File("immagini/sfondoStart.jpg"));
         //crea sfondo
         pannelloSfondo = creaPannelloConSfondo();
         //crea contenitore
@@ -124,7 +124,7 @@ public class guiStart extends JFrame {
         });
 
         // immagine del casino
-        imgCasino = ImageIO.read(new File("client/immagini/scrittaPoker.png"));
+        imgCasino = ImageIO.read(new File("immagini/scrittaPoker.png"));
         imgCasino = resizeImage(imgCasino, 600, 300);
         this.addComponent(50, 20, 0, 0, new JLabel(new ImageIcon(imgCasino)));
 
