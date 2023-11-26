@@ -74,14 +74,12 @@ public class gioco
                 this.game.inserisciMex("HAI VINTO " + tmp[1] + " COIN", "HAI VINTO!!!");
                 this.svuotaCarteTurno();
                 this.game.nuovoRound();
-                return;
             }
             else
             {
-                game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
+                this.game.inserisciMex("HAI PERSO, SCARSO", "HAI PERSO!");
                 this.svuotaCarteTurno();
                 this.game.nuovoRound();
-                return;
             }
             
         }
