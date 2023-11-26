@@ -204,6 +204,7 @@ public class Comunicazione {
         //salvo l'input in una variabile
         String funzioneRichiesta = in.readLine();
         //stampo l'input
+        System.out.println("INPUT RICEVUTO");
         System.out.println(funzioneRichiesta);
         //salvataggio funzione richiesta dal client in questione
         this.gioco.setFunzioneRichiesta(funzioneRichiesta);
@@ -233,6 +234,10 @@ public class Comunicazione {
             PrintWriter output = new PrintWriter(clientSocket.getOutputStream(), true);
             //output effettivo
             output.println(messaggio);
+
+            System.out.println("OUTPUT INVIATO");
+            System.out.println(messaggio);
+            
         } catch (IOException e) {
             System.out.println("ERRORE INVIO INFORMAZIONI!");
             // Gestione delle eccezioni, ad esempio, log o altre azioni necessarie
