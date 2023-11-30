@@ -1,4 +1,6 @@
-@startuml CLASS_DIAGRAM CLIENT
+@startuml CLASS_DIAGRAM_CLIENT
+
+title CLASS_DIAGRAM_CLIENT
 
 class Carte {
   - lista: List<Carta>
@@ -22,7 +24,6 @@ class Carta {
   + getIsScoperta(): boolean
   + setScoperta(isScoperta: boolean): void
 }
-
 
 class Comunicazione {
   - clientSocket: Socket
@@ -98,5 +99,11 @@ class GuiStart {
   - disegnaSfondo(g: Graphics): void
   - resizeImage(img: BufferedImage, larghezza: int, altezza: int): BufferedImage
 }
+
+GuiStart --> GuiGame: game
+GuiGame --> Gioco: play
+Gioco --> Comunicazione: communication
+Gioco --> Carte: carte
+Gioco --> Carte: flop
 
 @enduml
