@@ -28,5 +28,3 @@ Per installare il progetto Poker, segui questi passaggi:
 ## Funzionamento gioco
 Il gioco funziona in modo molto semplice, dopo che tutti i giocatori si sono connessi al gioco, appariranno diversi pop up che indicheranno i turni dei giocatori, potrà giocare solo colui che possiede il testimone del turno. Una volta che tutti i giocatori hanno deciso se scommettere o passare, il server decideròà chi ha vinto e lo condividerà con i vari giocatori: il giocatore che ha vinto riceverà la somma vinta e verrà visualizzata in un pop up, mentre tutti gli altri perdenti non riceveranno niente. Dopo aver controllato il vincitore, il server farà partire un nuovo round che permetterà nuovamente ai giocatori di scommettere o passare.
 
-
-npm start
